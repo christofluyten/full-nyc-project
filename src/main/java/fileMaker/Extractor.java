@@ -147,16 +147,12 @@ class Extractor {
         Point startPoint = new Point(Double.valueOf(line[10]),-1*Double.valueOf(line[11]));
         if (!(Integer.valueOf(line[7]) > 0)){
             return false;
-        } else if (! (Integer.valueOf(line[8]) > 0)){
+        } else if (! (Integer.valueOf(line[8]) > 60)){
             return false;
-        } else if (! (Double.valueOf(line[9]) > 0)){
+        } else if (! (Double.valueOf(line[9]) > 1)){
             return false;
-//        } else if (! (Link.getHighestLongitude() >= Double.valueOf(line[10]) && Double.valueOf(line[10]) >= Link.getLowestLongitude())){
-//            return false;
         } else if (! (Link.getHighestLongitude() >= Double.valueOf(line[12]) && Double.valueOf(line[12]) >= Link.getLowestLongitude())){
             return false;
-//        } else if (! (Link.getHighestLatitude() >= -1*Double.valueOf(line[11]) && -1*Double.valueOf(line[11]) >= Link.getLowestLatitude())) {
-//            return false;
         } else if (!Nyc.contains(startPoint)){
             return false;
         } else

@@ -249,8 +249,7 @@ public class ScenarioGenerator {
         List<SimulationObject> passengers = getIoHandler().readPositionedObjects(ioHandler.getPositionedPassengersPath());
         int totalCount = 0;
         int addedCount = 0;
-//TODO path meegeven
-        RoutingTable routingTable = RoutingTableSupplier.getRoutingTable("path");
+        RoutingTable routingTable = RoutingTableSupplier.getRoutingTable("src/main/resources/maps/RoutingTable");
         for (SimulationObject object : passengers) {
             if (true && (totalCount % 20 == 0)) {
                 addedCount++;

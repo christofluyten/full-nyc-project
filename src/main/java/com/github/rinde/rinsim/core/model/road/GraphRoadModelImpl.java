@@ -85,7 +85,7 @@ public class GraphRoadModelImpl extends AbstractRoadModel<Loc>
         graph = g;
         if (b.getRoutingTable()) {
             snapshot = GraphRoadModelSnapshot.create(
-                    ImmutableGraph.copyOf(graph), b.getDistanceUnit(), RoutingTableSupplier.getRoutingTable("pad"));
+                    ImmutableGraph.copyOf(graph), b.getDistanceUnit(), RoutingTableSupplier.getRoutingTable("src/main/resources/maps/RoutingTable"));
         } else {
             snapshot = GraphRoadModelSnapshot.create(
                     ImmutableGraph.copyOf(graph), b.getDistanceUnit(), new RoutingTable());

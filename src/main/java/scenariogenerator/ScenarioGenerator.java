@@ -239,7 +239,7 @@ public class ScenarioGenerator {
         int addedCount = 0;
         RoutingTable routingTable = RoutingTableSupplier.getRoutingTable("src/main/resources/maps/RoutingTable");
         for (SimulationObject object : passengers) {
-            if (true && (totalCount % 20 == 0)) {
+//            if (true && (totalCount % 20 == 0)) {
                 addedCount++;
                 Passenger passenger = (Passenger) object;
                 long pickupStartTime = passenger.getStartTime(this.builder.taxiDataStartTime);
@@ -271,7 +271,7 @@ public class ScenarioGenerator {
 //                System.out.println("+++++++++++++++++++++++++++++++");
 //                System.out.println();
 
-            }
+//            }
             totalCount++;
             if (addedCount >= 12) {
                 break;

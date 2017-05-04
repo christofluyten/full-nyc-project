@@ -35,7 +35,8 @@ NewYorkCityTaxiChallenge.iml
 nohup.out
 .idea/
 
-files/
+files/results
+files/gendreau2006
 
 
 src/main/resources/scenarios/

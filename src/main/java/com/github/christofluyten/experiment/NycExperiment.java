@@ -117,6 +117,8 @@ public class NycExperiment {
 		System.out.println("++++++  attribute "+attribute+"                            ++++++");
 		System.out.println("++++++  minNbOfBidders "+minNbOfBidders+"                  ++++++");
 		System.out.println("++++++  maxAuctionDurationSoft "+maxAuctionDurationSoft+"  ++++++");
+		System.out.println("++++++  debug "+debug+"  ++++++");
+
 
 		ScenarioGenerator sg;
 		if(debug){
@@ -161,7 +163,6 @@ public class NycExperiment {
 		System.out.println("measureUrgency " + Metrics.measureUrgency(scenario));
 		System.out.println("duration " + scenario.getTimeWindow().end());
 
-        System.out.println("There are " + scenarios.size() + " scenarios");
 
 //
 	    final OptaplannerSolvers.Builder opFfdFactory =
@@ -242,7 +243,8 @@ public class NycExperiment {
                             .withUnimprovedMsLimit(centralUnimprovedMs),
                     "Central_" + attribute));
         }
-        return configs;
+		System.out.println("created the mainConfigs");
+		return configs;
 	}
 
 	static MASConfiguration createMAS(OptaplannerSolvers.Builder opFfdFactory,

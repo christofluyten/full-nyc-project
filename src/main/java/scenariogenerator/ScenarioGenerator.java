@@ -51,8 +51,8 @@ public class ScenarioGenerator {
 //    private static final long pickupDuration = 30 * 1000L;
 //    private static final long deliveryDuration = 30 * 1000L;
 
-    private static final long PICKUP_DURATION = 0L;
-    private static final long DELIVERY_DURATION = 0L;
+    private static final long PICKUP_DURATION = 30 * 1000L;
+    private static final long DELIVERY_DURATION = 30 * 1000L;
 
 
     private static final String SCENARIO_NAME = "TimeWindow";

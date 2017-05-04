@@ -233,7 +233,7 @@ public class ScenarioGenerator {
 
 
             totalCount++;
-            if (debug && addedCount >= 10) {
+            if (debug && addedCount >= 20) {
                 break;
             }
         }

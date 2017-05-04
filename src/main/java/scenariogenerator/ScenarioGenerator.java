@@ -148,15 +148,15 @@ public class ScenarioGenerator {
                                             ListenableGraph.supplier(DotGraphIO.getMultiAttributeDataGraphSupplier(Paths.get(getIoHandler().getMapFilePath()))))
                                     .withSpeedUnit(NonSI.KILOMETERS_PER_HOUR)
                                     .withDistanceUnit(SI.KILOMETER)
-//                                    .withRoutingTable(true)
+                                    .withRoutingTable(this.builder.routingtable)
                     )
                             .withAllowVehicleDiversion(true))
                     .addEvent(TimeOutEvent.create(this.builder.scenarioDuration))
                     .scenarioLength(this.builder.scenarioDuration);
 //                    .addEvent(TimeOutEvent.create(scenarioDuration))
 //                    .scenarioLength(scenarioDuration);
-            addPassengersDebug(builder);
-//            addPassengers(builder);
+//            addPassengersDebug(builder);
+            addPassengers(builder);
         } else {
             builder.addModel(
                     PDPGraphRoadModel.builderForGraphRm(
@@ -165,7 +165,7 @@ public class ScenarioGenerator {
                                             ListenableGraph.supplier(DotGraphIO.getMultiAttributeDataGraphSupplier(Paths.get(getIoHandler().getMapFilePath()))))
                                     .withSpeedUnit(NonSI.KILOMETERS_PER_HOUR)
                                     .withDistanceUnit(SI.KILOMETER)
-                                    .withRoutingTable(true)
+                                    .withRoutingTable(this.builder.routingtable)
                     )
                             .withAllowVehicleDiversion(true))
                     .addEvent(TimeOutEvent.create(this.builder.scenarioDuration))
@@ -220,7 +220,8 @@ public class ScenarioGenerator {
 
 
             totalCount++;
-            if (debug && addedCount >= 20) {
+//            if (debug && addedCount >= 20) {
+            if (addedCount >= 20) {
                 break;
             }
         }
@@ -272,9 +273,9 @@ public class ScenarioGenerator {
 
             }
             totalCount++;
-//            if (addedCount >= 12) {
-//                break;
-//            }
+            if (addedCount >= 12) {
+                break;
+            }
 
         }
         System.out.println(addedCount + " passengers added of the " + totalCount);

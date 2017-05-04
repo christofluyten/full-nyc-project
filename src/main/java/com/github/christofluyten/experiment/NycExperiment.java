@@ -49,7 +49,7 @@ import java.util.List;
 public class NycExperiment {
 	private final static long rpMs = 100L; //100
 	private final static long bMs = 20L; //20
-	private final static long maxAuctionDurationSoft = 10000L;  //10000L;
+	private final static long maxAuctionDurationSoft = 15000L;  //10000L;
 	private final static long maxAuctionDurationHard = 30 * 60 * 1000L;
 	private final static long reactCooldownPeriodMs = 60*1000L;
 	private final static BidFunction bf = BidFunctions.BALANCED_HIGH;

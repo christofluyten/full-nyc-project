@@ -47,47 +47,44 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NycExperiment {
-	final static long rpMs = 100L; //100
-	final static long bMs = 20L; //20
-    final static long maxAuctionDurationSoft = 10000L;  //10000L;
-    final static long maxAuctionDurationHard = 30 * 60 * 1000L;
-    final static long reactCooldownPeriodMs = 60*1000L;
-	final static BidFunction bf = BidFunctions.BALANCED_HIGH;
-	final static String masSolverName =
+	private final static long rpMs = 100L; //100
+	private final static long bMs = 20L; //20
+	private final static long maxAuctionDurationSoft = 10000L;  //10000L;
+	private final static long maxAuctionDurationHard = 30 * 60 * 1000L;
+	private final static long reactCooldownPeriodMs = 60*1000L;
+	private final static BidFunction bf = BidFunctions.BALANCED_HIGH;
+	private final static String masSolverName =
 			"Step-counting-hill-climbing-with-entity-tabu-and-strategic-oscillation";
-	final static ObjectiveFunction objFunc = Gendreau06ObjectiveFunction.instance(70);
-	final static boolean enableReauctions = true;
-	final static boolean computationsLogging = false;
-	final static boolean ridesharing = false;
-	static String attribute = "noRidesharing";
-	static boolean debug = true;
+	private final static ObjectiveFunction objFunc = Gendreau06ObjectiveFunction.instance(70);
+	private final static boolean enableReauctions = true;
+	private final static boolean computationsLogging = false;
+	private final static boolean ridesharing = false;
+	private static String attribute = "noRidesharing";
+	private static boolean debug = true;
 
-	private static final String TAXI_DATA_DIRECTORY = "/media/christof/Elements/Taxi_data/";
-	private static final String TRAVEL_TIMES_DIRECTORY = "/media/christof/Elements/Traffic_estimates/"; //path to director with the travel_times
-	private static final Date TAXI_DATA_START_TIME = new Date("2013-11-18 16:00:00");                   //format: "yyyy-mm-dd HH:mm:ss"
-	private static final Date TAXI_DATA_END_TIME = new Date("2013-11-18 17:00:00");
+	private static final String taxiDataDirectory = "/media/christof/Elements/Taxi_data/";
+	private static final String travelTimesDirectory = "/media/christof/Elements/Traffic_estimates/"; //path to director with the travel_times
+	private static final Date taxiDataStartTime = new Date("2013-11-18 16:00:00");                   //format: "yyyy-mm-dd HH:mm:ss"
+	private static final Date taxiDataEndTime = new Date("2013-11-18 17:00:00");
 
-	private static final double MAX_VEHICLE_SPEED_KMH = 120d;
-
-//    private static final long pickupDuration = 30 * 1000L;
-//    private static final long deliveryDuration = 30 * 1000L;
-
-	private static final long PICKUP_DURATION = 0L;
-	private static final long DELIVERY_DURATION = 0L;
+	private static final double maxVehicleSpeedKmh = 120d;
 
 
-	private static final String SCENARIO_NAME = "TimeWindow";
-	private static final int CUT_LENGTH = 500;                                                  //maximum length in meters of a edge in the graph (or "link" in the "map")
-
-	private static final long SCENARIO_DURATION = (1 * 60 * 60 * 1000L) + 1L;
-
-	private static final long SCENARIO_DURATION_DEBUG = (1000 * 1000L) + 1L;
-
-	private static final boolean TRAFFIC = true;
+	private static final long pickupDuration = 30 * 1000L;
+	private static final long deliveryDuration = 30 * 1000L;
 
 
-	private static final long TICK_SIZE = 250L;
+	private static final int cutLength = 500;                                                  //maximum length in meters of a edge in the graph (or "link" in the "map")
 
+	private static final long scenarioDuration = (1 * 60 * 60 * 1000L) + 1L;
+
+	private static final long scenarioDurationDebug = (1000 * 1000L) + 1L;
+
+	private static final boolean traffic = true;
+
+
+	private static final long tickSize = 250L;
+	private static final int minNbOfBidders = 5;
 
 
 	/**
@@ -103,7 +100,7 @@ public class NycExperiment {
 			System.out.println("++++++++++ DEBUGGING ++++++++++");
 		}
         if (ridesharing) {
-            attribute = "Ridesharing_noFilter";
+            attribute = "Ridesharing";
         }
         performExperiment();
         System.out.println("THE END");
@@ -117,39 +114,43 @@ public class NycExperiment {
 		System.out.println(System.getProperty("os.name") + " "
 			      + System.getProperty("os.version") + " "
 			      + System.getProperty("os.arch"));
+		System.out.println("++++++  attribute "+attribute+"                            ++++++");
+		System.out.println("++++++  minNbOfBidders "+minNbOfBidders+"                  ++++++");
+		System.out.println("++++++  maxAuctionDurationSoft "+maxAuctionDurationSoft+"  ++++++");
+
 		ScenarioGenerator sg;
 		if(debug){
 			sg = ScenarioGenerator.builder()
-					.setCutLength(CUT_LENGTH)
-					.setDeliveryDuration(DELIVERY_DURATION)
-					.setPickupDuration(PICKUP_DURATION)
-					.setMaxVehicleSpeedKmh(MAX_VEHICLE_SPEED_KMH)
+					.setCutLength(cutLength)
+					.setDeliveryDuration(deliveryDuration)
+					.setPickupDuration(pickupDuration)
+					.setMaxVehicleSpeedKmh(maxVehicleSpeedKmh)
 					.setRidesharing(false)
-					.setScenarioDuration(SCENARIO_DURATION_DEBUG)
+					.setScenarioDuration(scenarioDurationDebug)
 					.setScenarioName("debug")
-					.setTaxiDataDirectory(TAXI_DATA_DIRECTORY)
-					.setTravelTimesDirectory(TRAVEL_TIMES_DIRECTORY)
-					.setTaxiDataStartTime(TAXI_DATA_START_TIME)
-					.setTaxiDataEndTime(TAXI_DATA_END_TIME)
-					.setTickSize(TICK_SIZE)
-					.setTraffic(TRAFFIC)
+					.setTaxiDataDirectory(taxiDataDirectory)
+					.setTravelTimesDirectory(travelTimesDirectory)
+					.setTaxiDataStartTime(taxiDataStartTime)
+					.setTaxiDataEndTime(taxiDataEndTime)
+					.setTickSize(tickSize)
+					.setTraffic(traffic)
 					.setRidesharing(ridesharing)
 					.build();
 		} else{
 			sg = ScenarioGenerator.builder()
-							.setCutLength(CUT_LENGTH)
-							.setDeliveryDuration(DELIVERY_DURATION)
-							.setPickupDuration(PICKUP_DURATION)
-							.setMaxVehicleSpeedKmh(MAX_VEHICLE_SPEED_KMH)
+							.setCutLength(cutLength)
+							.setDeliveryDuration(deliveryDuration)
+							.setPickupDuration(pickupDuration)
+							.setMaxVehicleSpeedKmh(maxVehicleSpeedKmh)
 							.setRidesharing(false)
-							.setScenarioDuration(SCENARIO_DURATION)
+							.setScenarioDuration(scenarioDuration)
 							.setScenarioName("")
-							.setTaxiDataDirectory(TAXI_DATA_DIRECTORY)
-							.setTravelTimesDirectory(TRAVEL_TIMES_DIRECTORY)
-							.setTaxiDataStartTime(TAXI_DATA_START_TIME)
-							.setTaxiDataEndTime(TAXI_DATA_END_TIME)
-							.setTickSize(TICK_SIZE)
-							.setTraffic(TRAFFIC)
+							.setTaxiDataDirectory(taxiDataDirectory)
+							.setTravelTimesDirectory(travelTimesDirectory)
+							.setTaxiDataStartTime(taxiDataStartTime)
+							.setTaxiDataEndTime(taxiDataEndTime)
+							.setTickSize(tickSize)
+							.setTraffic(traffic)
 							.setRidesharing(ridesharing)
 							.build();
 		}
@@ -290,7 +291,7 @@ public class NycExperiment {
 												AuctionStopConditions
 												.<DoubleBid>maxAuctionDuration(maxAuctionDurationSoft))))
 						.withMaxAuctionDuration(maxAuctionDurationHard)
-						.withBidderFilter(new AuctionCommModel.BidderFilter(1d,1d,5)))
+						.withBidderFilter(new AuctionCommModel.BidderFilter(1d,1d,minNbOfBidders)))
 				.addModel(RealtimeClockLogger.builder())
 				 ;
 		if (debug) {

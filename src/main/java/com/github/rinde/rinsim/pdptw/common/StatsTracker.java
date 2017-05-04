@@ -41,9 +41,7 @@ import com.github.rinde.rinsim.scenario.ScenarioController.ScenarioEvent;
 import com.github.rinde.rinsim.scenario.TimeOutEvent;
 import com.google.auto.value.AutoValue;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.github.rinde.rinsim.core.model.pdp.PDPModel.PDPModelEventType.*;
@@ -72,7 +70,9 @@ public final class StatsTracker extends AbstractModelVoid implements
   final TheListener theListener;
   final Clock clock;
   final RoadModel roadModel;
-  Map<Parcel,Long> parcelList = new HashMap<>();
+  Map<Parcel,Long> parcelPickupTime = new HashMap<>();
+  Map<Parcel,Long> parcelTardiness = new HashMap<>();
+
   RoutingTable routingTable = RoutingTableSupplier.getRoutingTable("src/main/resources/maps/RoutingTable");
 
   enum StatisticsEventType {
@@ -232,20 +232,21 @@ public final class StatsTracker extends AbstractModelVoid implements
         final Vehicle v = pme.vehicle;
         assert p != null;
         assert v != null;
+        parcelPickupTime.put(p,pme.time);
+        parcelTardiness.put(p,0L);
 
         final long latestBeginTime = p.getPickupTimeWindow().end()
           - p.getPickupDuration();
         if (pme.time > latestBeginTime) {
           final long tardiness = pme.time - latestBeginTime;
           pickupTardiness += tardiness;
+          parcelTardiness.put(p,tardiness);
           eventDispatcher.dispatchEvent(new StatisticsEvent(
             StatisticsEventType.PICKUP_TARDINESS, this, p, v, tardiness,
             pme.time));
         }
       } else if (e.getEventType() == PDPModelEventType.END_PICKUP) {
-        final PDPModelEvent pme = (PDPModelEvent) e;
-        final Parcel p = pme.parcel;
-        parcelList.put(p,pme.time);
+
         totalPickups++;
       } else if (e.getEventType() == PDPModelEventType.START_DELIVERY) {
         final PDPModelEvent pme = (PDPModelEvent) e;
@@ -254,18 +255,9 @@ public final class StatsTracker extends AbstractModelVoid implements
         final Vehicle v = pme.vehicle;
         assert p != null;
         assert v != null;
-        long startTime = parcelList.get(p);
-        long realTime = pme.time-startTime;
-        System.out.println("realTime =           "+ realTime);
-        long tableTime = (long) routingTable.getRoadPathTo(p.getPickupLocation(),p.getDeliveryLocation()).getTravelTime();
-        System.out.println("tableTime =          "+ tableTime);
-        System.out.println("diff =               "+ (realTime-tableTime));
-        System.out.println("OrderAnnounceTime:   "+ p.getOrderAnnounceTime());
-        System.out.println("End pickup:          " + startTime);
-        System.out.println("PickupTimeWindow:    "+p.getPickupTimeWindow());
-        System.out.println("DeliveryTimeWindow:  " +p.getDeliveryTimeWindow());
-        System.out.println("Start delivery:      " +pme.time);
-        System.out.println();
+
+
+        long dTardiness = 0L;
 
 
         final long latestBeginTime = p.getDeliveryTimeWindow().end()
@@ -273,10 +265,26 @@ public final class StatsTracker extends AbstractModelVoid implements
         if (pme.time > latestBeginTime) {
           final long tardiness = pme.time - latestBeginTime;
           deliveryTardiness += tardiness;
+          dTardiness = tardiness;
           eventDispatcher.dispatchEvent(new StatisticsEvent(
             StatisticsEventType.DELIVERY_TARDINESS, this, p, v, tardiness,
             pme.time));
         }
+        if(Math.abs(dTardiness - parcelTardiness.get(p))>10){
+          long startTime = parcelPickupTime.get(p);
+          long realTime = pme.time-startTime;
+          System.out.println("realTime =           "+ realTime);
+          long tableTime = (long) routingTable.getRoadPathTo(p.getPickupLocation(),p.getDeliveryLocation()).getTravelTime();
+          System.out.println("tableTime =          "+ tableTime);
+          System.out.println("diff =               "+ (realTime-tableTime));
+          System.out.println("OrderAnnounceTime:   "+ p.getOrderAnnounceTime());
+          System.out.println("Start pickup:          " + startTime);
+          System.out.println("PickupTimeWindow:    "+p.getPickupTimeWindow());
+          System.out.println("DeliveryTimeWindow:  " +p.getDeliveryTimeWindow());
+          System.out.println("Start delivery:      " +pme.time);
+          System.out.println();
+        }
+
       } else if (e.getEventType() == PDPModelEventType.END_DELIVERY) {
         totalDeliveries++;
       } else if (e.getEventType() == SCENARIO_EVENT) {

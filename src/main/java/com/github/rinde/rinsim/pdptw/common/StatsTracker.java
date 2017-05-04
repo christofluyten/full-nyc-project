@@ -256,10 +256,16 @@ public final class StatsTracker extends AbstractModelVoid implements
         assert v != null;
         long startTime = parcelList.get(p);
         long realTime = pme.time-startTime;
-        System.out.println("realTime = "+ realTime);
+        System.out.println("realTime =           "+ realTime);
         long tableTime = (long) routingTable.getRoadPathTo(p.getPickupLocation(),p.getDeliveryLocation()).getTravelTime();
-        System.out.println("tableTime = "+ tableTime);
-        System.out.println("diff = "+ (realTime-tableTime));
+        System.out.println("tableTime =          "+ tableTime);
+        System.out.println("diff =               "+ (realTime-tableTime));
+        System.out.println("OrderAnnounceTime:   "+ p.getOrderAnnounceTime());
+        System.out.println("End pickup:          " + startTime);
+        System.out.println("PickupTimeWindow:    "+p.getPickupTimeWindow());
+        System.out.println("DeliveryTimeWindow:  " +p.getDeliveryTimeWindow());
+        System.out.println("Start delivery:      " +pme.time);
+        System.out.println();
 
 
         final long latestBeginTime = p.getDeliveryTimeWindow().end()

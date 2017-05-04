@@ -113,8 +113,11 @@ public abstract class AbstractBidder<T extends Bid<T>> implements Bidder<T> {
             System.out.println("claimedParcels "+claimedParcels);
             System.out.println("assignedParcels " +this.assignedParcels);
             System.out.println("ParcelState "+p.toString()+" "+pdpModel.get().getParcelState(p));
+            System.out.println("OrderAnnounceTime "+p.getOrderAnnounceTime());
+            System.out.println("VehicleState "+pdpModel.get().getVehicleState(this.vehicle.get()));
             for(Parcel parcel:claimedParcels){
                 System.out.println("ParcelState "+parcel.toString()+" "+pdpModel.get().getParcelState(parcel));
+                System.out.println("OrderAnnounceTime "+parcel.getOrderAnnounceTime());
             }
         }
         LOGGER.info("{}: claim {}", this, p);

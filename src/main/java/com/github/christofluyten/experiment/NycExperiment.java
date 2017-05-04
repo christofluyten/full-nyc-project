@@ -114,10 +114,10 @@ public class NycExperiment {
 		System.out.println(System.getProperty("os.name") + " "
 			      + System.getProperty("os.version") + " "
 			      + System.getProperty("os.arch"));
-		System.out.println("++++++  attribute "+attribute+"                            ++++++");
-		System.out.println("++++++  minNbOfBidders "+minNbOfBidders+"                  ++++++");
-		System.out.println("++++++  maxAuctionDurationSoft "+maxAuctionDurationSoft+"  ++++++");
-		System.out.println("++++++  debug "+debug+"  ++++++");
+		System.out.println("++++++  attribute               "+attribute+" ++++++");
+		System.out.println("++++++  minNbOfBidders          "+minNbOfBidders+" ++++++");
+		System.out.println("++++++  maxAuctionDurationSoft  "+maxAuctionDurationSoft+" ++++++");
+		System.out.println("++++++  debug                   "+debug+" ++++++");
 
 
 		ScenarioGenerator sg;

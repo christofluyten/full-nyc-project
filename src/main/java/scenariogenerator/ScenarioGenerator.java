@@ -148,15 +148,15 @@ public class ScenarioGenerator {
                                             ListenableGraph.supplier(DotGraphIO.getMultiAttributeDataGraphSupplier(Paths.get(getIoHandler().getMapFilePath()))))
                                     .withSpeedUnit(NonSI.KILOMETERS_PER_HOUR)
                                     .withDistanceUnit(SI.KILOMETER)
-                                    .withRoutingTable(this.builder.routingtable)
+//                                    .withRoutingTable(this.builder.routingtable)
                     )
                             .withAllowVehicleDiversion(true))
                     .addEvent(TimeOutEvent.create(this.builder.scenarioDuration))
                     .scenarioLength(this.builder.scenarioDuration);
 //                    .addEvent(TimeOutEvent.create(scenarioDuration))
 //                    .scenarioLength(scenarioDuration);
-//            addPassengersDebug(builder);
-            addPassengers(builder);
+            addPassengersDebug(builder);
+//            addPassengers(builder);
         } else {
             builder.addModel(
                     PDPGraphRoadModel.builderForGraphRm(
@@ -220,8 +220,8 @@ public class ScenarioGenerator {
 
 
             totalCount++;
-//            if (debug && addedCount >= 20) {
-            if (addedCount >= 20) {
+            if (debug && addedCount >= 20) {
+//            if (addedCount >= 20) {
                 break;
             }
         }
@@ -239,7 +239,7 @@ public class ScenarioGenerator {
         int addedCount = 0;
         RoutingTable routingTable = RoutingTableSupplier.getRoutingTable("src/main/resources/maps/RoutingTable");
         for (SimulationObject object : passengers) {
-//            if (true && (totalCount % 20 == 0)) {
+            if (true && (totalCount % 20 == 0)) {
                 addedCount++;
                 Passenger passenger = (Passenger) object;
                 long pickupStartTime = passenger.getStartTime(this.builder.taxiDataStartTime);
@@ -261,21 +261,11 @@ public class ScenarioGenerator {
                 }
                 builder.addEvent(
                         AddParcelEvent.create(parcelBuilder.buildDTO()));
-//                long travelTime = (long) routingTable.getRoute(passenger.getStartPoint(), passenger.getEndPoint()).getTravelTime();
-//                System.out.println("+++++++++++++++++++++++++++++++");
-//                System.out.println("pickupStartTime " + pickupStartTime);
-//                System.out.println("pickupTimeWindow " + pickupTimeWindow);
-//                System.out.println("travelTime " + travelTime);
-//                System.out.println("deliveryStartTime " + deliveryStartTime);
-//
-//                System.out.println("+++++++++++++++++++++++++++++++");
-//                System.out.println();
-
-//            }
-            totalCount++;
-            if (addedCount >= 12) {
-                break;
             }
+            totalCount++;
+//            if (addedCount >= 12) {
+//                break;
+//            }
 
         }
         System.out.println(addedCount + " passengers added of the " + totalCount);

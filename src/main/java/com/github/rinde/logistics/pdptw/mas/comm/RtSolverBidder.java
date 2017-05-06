@@ -15,18 +15,49 @@
  */
 package com.github.rinde.logistics.pdptw.mas.comm;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.Sets.newLinkedHashSet;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+
 import com.github.rinde.logistics.pdptw.mas.Truck;
-import com.github.rinde.rinsim.central.*;
+import com.github.rinde.rinsim.central.GlobalStateObject;
+import com.github.rinde.rinsim.central.Measurable;
+import com.github.rinde.rinsim.central.SimSolverBuilder;
+import com.github.rinde.rinsim.central.Solver;
+import com.github.rinde.rinsim.central.SolverTimeMeasurement;
+import com.github.rinde.rinsim.central.SolverUser;
+import com.github.rinde.rinsim.central.Solvers;
 import com.github.rinde.rinsim.central.Solvers.SolveArgs;
-import com.github.rinde.rinsim.central.rt.*;
+import com.github.rinde.rinsim.central.rt.RealtimeSolver;
+import com.github.rinde.rinsim.central.rt.RtSimSolver;
 import com.github.rinde.rinsim.central.rt.RtSimSolver.EventType;
 import com.github.rinde.rinsim.central.rt.RtSimSolver.SolverEvent;
+import com.github.rinde.rinsim.central.rt.RtSimSolverBuilder;
+import com.github.rinde.rinsim.central.rt.RtSolverModel;
+import com.github.rinde.rinsim.central.rt.RtSolverUser;
+import com.github.rinde.rinsim.central.rt.RtStAdapters;
 import com.github.rinde.rinsim.core.model.pdp.Parcel;
 import com.github.rinde.rinsim.core.model.time.TickListener;
 import com.github.rinde.rinsim.core.model.time.TimeLapse;
 import com.github.rinde.rinsim.event.Event;
 import com.github.rinde.rinsim.event.EventAPI;
 import com.github.rinde.rinsim.event.Listener;
+import com.github.rinde.rinsim.geom.GeomHeuristic;
 import com.github.rinde.rinsim.geom.GeomHeuristics;
 import com.github.rinde.rinsim.geom.Point;
 import com.github.rinde.rinsim.pdptw.common.ObjectiveFunction;
@@ -35,28 +66,18 @@ import com.github.rinde.rinsim.util.StochasticSupplier;
 import com.google.auto.value.AutoValue;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Queues;
-
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-
-import java.io.Serializable;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.collect.Sets.newLinkedHashSet;
 
 /**
  *
  * @author Rinde van Lon
  */
 public class RtSolverBidder
-    extends AbstractBidder<DoubleBid>
-    implements RtSolverUser, TickListener, Measurable {
+        extends AbstractBidder<DoubleBid>
+        implements RtSolverUser, TickListener, Measurable {
 
   // 5 minutes
   private static final long MAX_LOSING_TIME = 5 * 60 * 1000;
@@ -74,6 +95,8 @@ public class RtSolverBidder
   final boolean reauctionsEnabled;
   long lastAuctionWinTime;
 
+  GeomHeuristic geomHeuristic;
+
   // this field will either be set to the decorator reference (if the bidder is
   // decorated) or it will not be set, in that case it will refer to 'this'.
   // This field prevents the decorated bidder from leaking from its decorator.
@@ -83,7 +106,8 @@ public class RtSolverBidder
   private final long reauctionCooldownPeriod;
 
   RtSolverBidder(ObjectiveFunction objFunc, RealtimeSolver s,
-                 BidFunction bidFunc, long cooldown, boolean reauctEnabled) {
+                 BidFunction bidFunc, long cooldown, boolean reauctEnabled,
+                 GeomHeuristic heuristic) {
     super(SetFactories.synchronizedFactory(SetFactories.linkedHashSet()));
     objectiveFunction = objFunc;
     solver = s;
@@ -95,6 +119,7 @@ public class RtSolverBidder
     computing = new AtomicBoolean();
     reauctionCooldownPeriod = cooldown;
     reauctionsEnabled = reauctEnabled;
+    geomHeuristic = heuristic;
   }
 
   public RealtimeSolver getSolver() {
@@ -103,17 +128,17 @@ public class RtSolverBidder
 
   @Override
   public void callForBids(final Auctioneer<DoubleBid> auctioneer,
-      final Parcel parcel, final long time) {
+                          final Parcel parcel, final long time) {
     LOGGER.trace("{} receive callForBids {} {} {}", decorator, auctioneer,
-      parcel, time);
+            parcel, time);
     cfbQueue.add(CallForBids.create(auctioneer, parcel, time));
     parcelAuctioneers.put(parcel, auctioneer);
 
     // avoid multiple bids at the same time
     checkState(solverHandle.isPresent(),
-      "A %s could not be obtained, probably missing a %s.",
-      RtSimSolver.class.getSimpleName(),
-      RtSolverModel.class.getSimpleName());
+            "A %s could not be obtained, probably missing a %s.",
+            RtSimSolver.class.getSimpleName(),
+            RtSolverModel.class.getSimpleName());
     next();
   }
 
@@ -134,9 +159,9 @@ public class RtSolverBidder
 
   @Override
   public void endOfAuction(Auctioneer<DoubleBid> auctioneer, Parcel parcel,
-      long time) {
+                           long time) {
     final CallForBids endedAuction =
-      CallForBids.create(auctioneer, parcel, time);
+            CallForBids.create(auctioneer, parcel, time);
 
     // we have won
     if (equals(auctioneer.getWinner())) {
@@ -167,10 +192,10 @@ public class RtSolverBidder
     }
 
     if (!equals(auctioneer.getWinner())
-      && time - lastAuctionWinTime > MAX_LOSING_TIME
-      && !assignedParcels.isEmpty()) {
+            && time - lastAuctionWinTime > MAX_LOSING_TIME
+            && !assignedParcels.isEmpty()) {
       LOGGER.trace("{} We haven't won an auction for a while -> reauction",
-        decorator);
+              decorator);
       // we haven't won an auction for a while
       reauction();
     }
@@ -180,7 +205,7 @@ public class RtSolverBidder
     synchronized (computing) {
       if (!cfbQueue.isEmpty() && !computing.get()) {
         while (!cfbQueue.isEmpty()
-          && cfbQueue.peek().getAuctioneer().hasWinner()) {
+                && cfbQueue.peek().getAuctioneer().hasWinner()) {
           // remove all call for bids which have already finished
           cfbQueue.remove();
         }
@@ -198,15 +223,16 @@ public class RtSolverBidder
     final Set<Parcel> parcels = newLinkedHashSet(assignedParcels);
     parcels.add(cfb.getParcel());
     final ImmutableList<Parcel> currentRoute =
-      ImmutableList.copyOf(((Truck) vehicle.get()).getRoute());
+            ImmutableList.copyOf(((Truck) vehicle.get()).getRoute());
 
     final GlobalStateObject state = solverHandle.get().getCurrentState(
-      SolveArgs.create()
-        .useCurrentRoutes(ImmutableList.of(currentRoute))
-        .fixRoutes()
-        .useParcels(parcels));
+            SolveArgs.create()
+                    .useCurrentRoutes(ImmutableList.of(currentRoute))
+                    .fixRoutes()
+                    .useParcels(parcels));
     final double baseline = objectiveFunction.computeCost(
-      Solvers.computeStats(state, ImmutableList.of(currentRoute),GeomHeuristics.time(70d)));
+            Solvers.computeStats(state, ImmutableList.of(currentRoute),
+                    geomHeuristic));
 
     final EventAPI ev = solverHandle.get().getEventAPI();
     final Bidder<DoubleBid> bidder = decorator;
@@ -220,7 +246,7 @@ public class RtSolverBidder
           final SolverEvent event = (SolverEvent) e;
           checkState(cfbQueue.peek().equals(cfb));
           checkArgument(event.hasScheduleAndState(),
-            "Solver was terminated before it found a solution.");
+                  "Solver was terminated before it found a solution.");
 
           checkState(!exec, "%s handleEvent was already called.", bidder);
           checkState(ev.containsListener(this, EventType.DONE));
@@ -237,19 +263,18 @@ public class RtSolverBidder
 
           // submit bid using baseline
           final ImmutableList<ImmutableList<Parcel>> schedule =
-            solverHandle.get().getCurrentSchedule();
+                  solverHandle.get().getCurrentSchedule();
           final double newCost = objectiveFunction.computeCost(
-            Solvers.computeStats(state, schedule,GeomHeuristics.time(70d)));
+                  Solvers.computeStats(state, schedule, geomHeuristic));
 
           LOGGER.trace("{} Computed new bid: baseline {}, newcost {}", bidder,
-            baseline, newCost);
+                  baseline, newCost);
 
           final double bidValue =
-            bidFunction.computeBidValue(currentRoute.size() + 2,
-              newCost - baseline);
-//          System.out.println("bid "+bidder.toString()+" "+ bidValue+" "+cfb.getParcel());
+                  bidFunction.computeBidValue(currentRoute.size() + 2,
+                          newCost - baseline);
           cfb.getAuctioneer().submit(DoubleBid.create(
-            cfb.getTime(), bidder, cfb.getParcel(), bidValue));
+                  cfb.getTime(), bidder, cfb.getParcel(), bidValue));
 
           cfbQueue.poll();
           checkState(computing.getAndSet(false));
@@ -266,18 +291,18 @@ public class RtSolverBidder
     // schedules since we can only propose one bid, therefore we wait for the
     // best schedule).
     solverHandle.get().getEventAPI()
-      .addListener(currentListener, EventType.DONE);
+            .addListener(currentListener, EventType.DONE);
 
     LOGGER.trace("{} Compute new bid, currentRoute {}, parcels {}.", decorator,
-      currentRoute, parcels);
+            currentRoute, parcels);
     solverHandle.get().solve(state);
   }
 
   @Override
   public void receiveParcel(Auctioneer<DoubleBid> auctioneer, Parcel p,
-      long auctionStartTime) {
+                            long auctionStartTime) {
     LOGGER.trace("{} RECEIVE PARCEL {} {} {}", decorator, auctioneer, p,
-      auctionStartTime);
+            auctionStartTime);
 
     super.receiveParcel(auctioneer, p, auctionStartTime);
     checkArgument(auctioneer.getWinner().equals(decorator));
@@ -289,13 +314,14 @@ public class RtSolverBidder
       return;
     }
     LOGGER.trace("{} Considering a reauction, assignedParcels: {}.", decorator,
-      assignedParcels.size());
+            assignedParcels.size());
     final ImmutableList<Parcel> currentRoute =
-      ImmutableList.copyOf(((Truck) vehicle.get()).getRoute());
+            ImmutableList.copyOf(((Truck) vehicle.get()).getRoute());
     final GlobalStateObject state = solverHandle.get().getCurrentState(
-      SolveArgs.create().noCurrentRoutes().useParcels(assignedParcels));
+            SolveArgs.create().noCurrentRoutes().useParcels(assignedParcels));
     final StatisticsDTO stats =
-      Solvers.computeStats(state, ImmutableList.of(currentRoute),GeomHeuristics.time(70d));
+            Solvers.computeStats(state, ImmutableList.of(currentRoute),
+                    geomHeuristic);
 
 //    final Parcel lastReceivedParcel = Iterables.getLast(assignedParcels);
 
@@ -305,14 +331,14 @@ public class RtSolverBidder
       // TODO filter out parcels that will be visited within several seconds
       // (length of auction)
       final Multiset<Parcel> routeMultiset =
-        LinkedHashMultiset.create(currentRoute);
+              LinkedHashMultiset.create(currentRoute);
       final Set<Parcel> swappableParcels = new LinkedHashSet<>();
       for (final Parcel ap : assignedParcels) {
         if (!pdpModel.get().getParcelState(ap).isPickedUp()
-          && !pdpModel.get().getParcelState(ap).isTransitionState()
-          && !state.getVehicles().get(0).getDestination().asSet()
-            .contains(ap)
-//          && !ap.equals(lastReceivedParcel)
+                && !pdpModel.get().getParcelState(ap).isTransitionState()
+                && !state.getVehicles().get(0).getDestination().asSet()
+                .contains(ap)
+//                && !ap.equals(lastReceivedParcel)
                 ) {
           swappableParcels.add(ap);
         }
@@ -329,8 +355,8 @@ public class RtSolverBidder
         newRoute.addAll(currentRoute);
         newRoute.removeAll(Collections.singleton(sp));
         final double cost = objectiveFunction.computeCost(
-          Solvers.computeStats(state,
-            ImmutableList.of(ImmutableList.copyOf(newRoute)),GeomHeuristics.time(70d)));
+                Solvers.computeStats(state,
+                        ImmutableList.of(ImmutableList.copyOf(newRoute)), geomHeuristic));
         if (cost < lowestCost) {
           lowestCost = cost;
           toSwap = sp;
@@ -340,14 +366,14 @@ public class RtSolverBidder
       // we have found the most expensive parcel in the route, that is, removing
       // this parcel from the route will yield the greatest cost reduction.
       if (toSwap != null
-        && !reauctioning.get()
-//        && !toSwap.equals(lastReceivedParcel)
+              && !reauctioning.get()
+//              && !toSwap.equals(lastReceivedParcel)
               ) {
 
         final Auctioneer<DoubleBid> auct = parcelAuctioneers.get(toSwap);
         if (auct.getLastUnsuccessTime() > 0
-          && state.getTime()
-            - auct.getLastUnsuccessTime() <= reauctionCooldownPeriod) {
+                && state.getTime()
+                - auct.getLastUnsuccessTime() <= reauctionCooldownPeriod) {
           LOGGER.trace("Not reauctioning, was unsuccessful too recently");
           return;
         }
@@ -357,19 +383,17 @@ public class RtSolverBidder
         LOGGER.trace("Found most expensive parcel for reauction: {}.", toSwap);
 
         final double bidValue = bidFunction.computeBidValue(currentRoute.size(),
-          baseline - lowestCost);
+                baseline - lowestCost);
         final DoubleBid initialBid =
-          DoubleBid.create(state.getTime(), decorator, toSwap, bidValue);
-//        System.out.println("bidFunction "+lowestCost+" "+baseline);
-//        System.out.println("initialBid "+decorator + " " + bidValue+" "+toSwap.toString());
+                DoubleBid.create(state.getTime(), decorator, toSwap, bidValue);
 
         auct.auctionParcel(decorator, state.getTime(), initialBid,
-          new Listener() {
-            @Override
-            public void handleEvent(Event e) {
-              reauctioning.set(false);
-            }
-          });
+                new Listener() {
+                  @Override
+                  public void handleEvent(Event e) {
+                    reauctioning.set(false);
+                  }
+                });
       }
     }
   }
@@ -379,7 +403,7 @@ public class RtSolverBidder
     LOGGER.trace("{} RELEASE PARCEL {}", decorator, p);
     // remove the parcel from the route immediately to avoid going there
     final List<Parcel> currentRoute =
-      new ArrayList<>(((Truck) vehicle.get()).getRoute());
+            new ArrayList<>(((Truck) vehicle.get()).getRoute());
     if (currentRoute.contains(p)) {
       final List<Parcel> original = new ArrayList<>(currentRoute);
       LOGGER.trace(" > remove parcel from route: {}", currentRoute);
@@ -410,7 +434,7 @@ public class RtSolverBidder
   @Override
   public void setSolverProvider(RtSimSolverBuilder builder) {
     solverHandle = Optional.of(builder.setVehicles(vehicle.asSet())
-      .build(solver));
+            .build(solver));
   }
 
   @Override
@@ -419,23 +443,22 @@ public class RtSolverBidder
       return ((Measurable) getSolver()).getTimeMeasurements();
     }
     throw new IllegalStateException(
-      "Solver " + getSolver() + " is not measurable.");
+            "Solver " + getSolver() + " is not measurable.");
   }
 
   public static Builder realtimeBuilder(ObjectiveFunction objFunc,
-      StochasticSupplier<? extends RealtimeSolver> solverSupplier) {
+                                        StochasticSupplier<? extends RealtimeSolver> solverSupplier) {
     return Builder.createRt(solverSupplier, objFunc);
   }
 
   public static Builder simulatedTimeBuilder(ObjectiveFunction objFunc,
-      StochasticSupplier<? extends Solver> solverSupplier) {
+                                             StochasticSupplier<? extends Solver> solverSupplier) {
     return Builder.createSt(solverSupplier, objFunc);
   }
 
   public Point getBidderLocation(){
     return vehicle.get().getCurrentLocation();
   }
-
 
   public interface BidFunction {
     double computeBidValue(int numLocations, double additionalCost);
@@ -482,17 +505,19 @@ public class RtSolverBidder
     abstract long getTime();
 
     static CallForBids create(Auctioneer<DoubleBid> auctioneer, Parcel parcel,
-        long time) {
+                              long time) {
       return new AutoValue_RtSolverBidder_CallForBids(auctioneer, parcel, time);
     }
   }
 
   @AutoValue
   public abstract static class Builder
-      implements Serializable, StochasticSupplier<Bidder<DoubleBid>> {
+          implements Serializable, StochasticSupplier<Bidder<DoubleBid>> {
     static final BidFunction DEFAULT_BID_FUNCTION = BidFunctions.PLAIN;
     static final long DEFAULT_COOLDOWN_VALUE = 0L;
     static final boolean DEFAULT_REAUCTIONS_ENABLED = true;
+    static final GeomHeuristic DEFAULT_GEOM_HEURISTIC =
+            GeomHeuristics.euclidean();
 
     Builder() {}
 
@@ -506,6 +531,8 @@ public class RtSolverBidder
 
     abstract boolean isReauctionsEnabled();
 
+    abstract GeomHeuristic getGeomHeuristic();
+
     @Nullable
     abstract StochasticSupplier<? extends RealtimeSolver> getRtSolverSupplier();
 
@@ -515,12 +542,13 @@ public class RtSolverBidder
     @CheckReturnValue
     public Builder withBidFunction(BidFunction bidFunction) {
       return create(
-        getObjectiveFunction(),
-        bidFunction,
-        getReauctionCooldownPeriod(),
-        isReauctionsEnabled(),
-        getRtSolverSupplier(),
-        getStSolverSupplier());
+              getObjectiveFunction(),
+              bidFunction,
+              getReauctionCooldownPeriod(),
+              isReauctionsEnabled(),
+              getGeomHeuristic(),
+              getRtSolverSupplier(),
+              getStSolverSupplier());
     }
 
     /**
@@ -537,14 +565,15 @@ public class RtSolverBidder
     @CheckReturnValue
     public Builder withReauctionCooldownPeriod(long periodMs) {
       checkArgument(periodMs >= 0L,
-        "A negative cooldown period is not allowed.");
+              "A negative cooldown period is not allowed.");
       return create(
-        getObjectiveFunction(),
-        getBidFunction(),
-        periodMs,
-        isReauctionsEnabled(),
-        getRtSolverSupplier(),
-        getStSolverSupplier());
+              getObjectiveFunction(),
+              getBidFunction(),
+              periodMs,
+              isReauctionsEnabled(),
+              getGeomHeuristic(),
+              getRtSolverSupplier(),
+              getStSolverSupplier());
     }
 
     /**
@@ -558,12 +587,30 @@ public class RtSolverBidder
     @CheckReturnValue
     public Builder withReauctionsEnabled(boolean enabled) {
       return create(
-        getObjectiveFunction(),
-        getBidFunction(),
-        getReauctionCooldownPeriod(),
-        enabled,
-        getRtSolverSupplier(),
-        getStSolverSupplier());
+              getObjectiveFunction(),
+              getBidFunction(),
+              getReauctionCooldownPeriod(),
+              enabled,
+              getGeomHeuristic(),
+              getRtSolverSupplier(),
+              getStSolverSupplier());
+    }
+
+    /**
+     * Set the heuristic to be used for calculating costs for bids.
+     * @param heuristic The heuristic to be used when calculating costs. Default
+     *          value: {@link GeomHeuristics#euclidean()}.
+     * @return This, as per Builder pattern.
+     */
+    public Builder withGeomHeuristic(GeomHeuristic heuristic) {
+      return create(
+              getObjectiveFunction(),
+              getBidFunction(),
+              getReauctionCooldownPeriod(),
+              isReauctionsEnabled(),
+              heuristic,
+              getRtSolverSupplier(),
+              getStSolverSupplier());
     }
 
     @SuppressWarnings("null")
@@ -571,52 +618,54 @@ public class RtSolverBidder
     public Bidder<DoubleBid> get(long seed) {
       if (getRtSolverSupplier() != null) {
         return new RtSolverBidder(getObjectiveFunction(),
-          getRtSolverSupplier().get(seed), getBidFunction(),
-          getReauctionCooldownPeriod(), isReauctionsEnabled());
+                getRtSolverSupplier().get(seed), getBidFunction(),
+                getReauctionCooldownPeriod(), isReauctionsEnabled(),
+                getGeomHeuristic());
       } else {
         return new StSolverBidder(
-          new RtSolverBidder(getObjectiveFunction(),
-            RtStAdapters.toRealtime(getStSolverSupplier()).get(seed),
-            getBidFunction(), getReauctionCooldownPeriod(),
-            isReauctionsEnabled()));
+                new RtSolverBidder(getObjectiveFunction(),
+                        RtStAdapters.toRealtime(getStSolverSupplier()).get(seed),
+                        getBidFunction(), getReauctionCooldownPeriod(),
+                        isReauctionsEnabled(), getGeomHeuristic()));
       }
     }
 
     @Override
     public String toString() {
       return RtSolverBidder.class.getSimpleName()
-        + (getRtSolverSupplier() != null
-          ? ".realtimeBuilder()"
-          : ".simulatedTimeBuilder()");
+              + (getRtSolverSupplier() != null
+              ? ".realtimeBuilder()"
+              : ".simulatedTimeBuilder()");
     }
 
     static Builder createRt(StochasticSupplier<? extends RealtimeSolver> sup,
-        ObjectiveFunction objFunc) {
+                            ObjectiveFunction objFunc) {
       return create(objFunc, DEFAULT_BID_FUNCTION, DEFAULT_COOLDOWN_VALUE,
-        DEFAULT_REAUCTIONS_ENABLED, sup, null);
+              DEFAULT_REAUCTIONS_ENABLED, DEFAULT_GEOM_HEURISTIC, sup, null);
     }
 
     static Builder createSt(StochasticSupplier<? extends Solver> sup,
-        ObjectiveFunction objFunc) {
+                            ObjectiveFunction objFunc) {
       return create(objFunc, DEFAULT_BID_FUNCTION, DEFAULT_COOLDOWN_VALUE,
-        DEFAULT_REAUCTIONS_ENABLED, null, sup);
+              DEFAULT_REAUCTIONS_ENABLED, DEFAULT_GEOM_HEURISTIC, null, sup);
     }
 
     static Builder create(ObjectiveFunction objectiveFunction,
-        BidFunction bidFunction,
-        long reauctionCooldownPeriod,
-        boolean reauctionsEnabled,
-        @Nullable StochasticSupplier<? extends RealtimeSolver> rtSolverSupplier,
-        @Nullable StochasticSupplier<? extends Solver> stSolverSupplier) {
+                          RtSolverBidder.BidFunction bidFunction,
+                          long reauctionCooldownPeriod,
+                          boolean reauctionsEnabled, GeomHeuristic heuristic,
+                          @Nullable StochasticSupplier<? extends RealtimeSolver> rtSolverSupplier,
+                          @Nullable StochasticSupplier<? extends Solver> stSolverSupplier) {
       return new AutoValue_RtSolverBidder_Builder(objectiveFunction,
-        bidFunction, reauctionCooldownPeriod, reauctionsEnabled,
-        rtSolverSupplier, stSolverSupplier);
+              bidFunction, reauctionCooldownPeriod, reauctionsEnabled,
+              heuristic,
+              rtSolverSupplier, stSolverSupplier);
     }
 
   }
 
   static final class StSolverBidder extends ForwardingBidder<DoubleBid>
-      implements SolverUser, TickListener {
+          implements SolverUser, TickListener {
 
     RtSolverBidder delegate;
     SolverUser stAdapter;
@@ -650,13 +699,14 @@ public class RtSolverBidder
     @Override
     public String toString() {
       return StSolverBidder.class.getSimpleName() + "{" + delegate.toString()
-        + "}";
+              + "}";
     }
-//TODO
+
     @Override
     public Point getBidderLocation() {
-      return null;
+      return delegate.vehicle.get().getCurrentLocation();
     }
+
   }
 
 }

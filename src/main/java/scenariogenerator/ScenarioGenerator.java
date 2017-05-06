@@ -5,6 +5,7 @@ import com.github.rinde.rinsim.core.model.pdp.DefaultPDPModel;
 import com.github.rinde.rinsim.core.model.pdp.Parcel;
 import com.github.rinde.rinsim.core.model.pdp.TimeWindowPolicy;
 import com.github.rinde.rinsim.core.model.pdp.VehicleDTO;
+import com.github.rinde.rinsim.core.model.road.CachedNycGraphRoadModelImpl;
 import com.github.rinde.rinsim.core.model.road.RoadModelBuilders;
 import com.github.rinde.rinsim.core.model.time.RealtimeClockController;
 import com.github.rinde.rinsim.core.model.time.TimeModel;
@@ -119,10 +120,6 @@ public class ScenarioGenerator {
         return ioHandler;
     }
 
-    public String getScenarioName() {
-        return scenarioName;
-    }
-
     private void setScenarioFileFullName() {
         getIoHandler().setScenarioFileFullName(getIoHandler().getScenarioFileName() + "_" + getIoHandler().getAttribute() + "_" + getIoHandler().getScenarioStartTime().getShortStringDateForPath() + "_"
                 + getIoHandler().getScenarioEndTime().getShortStringDateForPath());
@@ -143,12 +140,10 @@ public class ScenarioGenerator {
         if (debug) {
             builder.addModel(
                     PDPGraphRoadModel.builderForGraphRm(
-                            RoadModelBuilders
-                                    .staticGraph(
-                                            ListenableGraph.supplier(DotGraphIO.getMultiAttributeDataGraphSupplier(Paths.get(getIoHandler().getMapFilePath()))))
+                            CachedNycGraphRoadModelImpl.builder(
+                                            ListenableGraph.supplier(DotGraphIO.getMultiAttributeDataGraphSupplier(Paths.get(getIoHandler().getMapFilePath()))),this.builder.routingTablePath)
                                     .withSpeedUnit(NonSI.KILOMETERS_PER_HOUR)
                                     .withDistanceUnit(SI.KILOMETER)
-//                                    .withRoutingTable(this.builder.routingtable)
                     )
                             .withAllowVehicleDiversion(true))
                     .addEvent(TimeOutEvent.create(this.builder.scenarioDuration))
@@ -160,12 +155,10 @@ public class ScenarioGenerator {
         } else {
             builder.addModel(
                     PDPGraphRoadModel.builderForGraphRm(
-                            RoadModelBuilders
-                                    .staticGraph(
-                                            ListenableGraph.supplier(DotGraphIO.getMultiAttributeDataGraphSupplier(Paths.get(getIoHandler().getMapFilePath()))))
+                            CachedNycGraphRoadModelImpl.builder(
+                                    ListenableGraph.supplier(DotGraphIO.getMultiAttributeDataGraphSupplier(Paths.get(getIoHandler().getMapFilePath()))),this.builder.routingTablePath)
                                     .withSpeedUnit(NonSI.KILOMETERS_PER_HOUR)
                                     .withDistanceUnit(SI.KILOMETER)
-                                    .withRoutingTable(this.builder.routingtable)
                     )
                             .withAllowVehicleDiversion(true))
                     .addEvent(TimeOutEvent.create(this.builder.scenarioDuration))
@@ -237,7 +230,7 @@ public class ScenarioGenerator {
         List<SimulationObject> passengers = getIoHandler().readPositionedObjects(ioHandler.getPositionedPassengersPath());
         int totalCount = 0;
         int addedCount = 0;
-        RoutingTable routingTable = RoutingTableSupplier.getRoutingTable("src/main/resources/maps/RoutingTable");
+        RoutingTable routingTable = RoutingTableSupplier.get(this.builder.routingTablePath);
         for (SimulationObject object : passengers) {
             if (true && (totalCount % 20 == 0)) {
                 addedCount++;
@@ -356,8 +349,8 @@ public class ScenarioGenerator {
         private boolean traffic;
         private long tickSize;
         private boolean ridesharing;
-        private boolean routingtable;
-        private String routingtablePath;
+        private boolean routingTable;
+        private String routingTablePath;
 
         Builder() {
             taxiDataDirectory = "/media/christof/Elements/Taxi_data/";
@@ -373,7 +366,7 @@ public class ScenarioGenerator {
             traffic = true;
             tickSize = 250L;
             ridesharing = false;
-            routingtable = false;
+            routingTable = false;
 
         }
 
@@ -443,11 +436,11 @@ public class ScenarioGenerator {
         }
 
 
-//        public Builder setRoutingtablePath(String routingtablePath) {
-//            this.routingtable = true;
-//            this.routingtablePath = routingtablePath;
-//            return this;
-//        }
+        public Builder setRoutingTablePath(String routingTablePath) {
+            this.routingTable = true;
+            this.routingTablePath = routingTablePath;
+            return this;
+        }
 
         public ScenarioGenerator build() {
             return new ScenarioGenerator(this);

@@ -20,6 +20,7 @@ import com.github.rinde.rinsim.experiment.Experiment;
 import com.github.rinde.rinsim.experiment.Experiment.SimArgs;
 import com.github.rinde.rinsim.experiment.MASConfiguration;
 import com.github.rinde.rinsim.experiment.PostProcessor;
+import com.github.rinde.rinsim.geom.GeomHeuristic;
 import com.github.rinde.rinsim.geom.GeomHeuristics;
 import com.github.rinde.rinsim.pdptw.common.*;
 import com.github.rinde.rinsim.scenario.Scenario;
@@ -60,7 +61,7 @@ public class NycExperiment {
 	private final static boolean computationsLogging = false;
 	private final static boolean ridesharing = false;
 	private static String attribute = "noRidesharing";
-	private static boolean debug = true;
+	private static boolean debug = false;
 
 	private static final String taxiDataDirectory = "/media/christof/Elements/Taxi_data/";
 	private static final String travelTimesDirectory = "/media/christof/Elements/Traffic_estimates/"; //path to director with the travel_times
@@ -82,9 +83,13 @@ public class NycExperiment {
 
 	private static final boolean traffic = true;
 
+	private static final GeomHeuristic heuristic = GeomHeuristics.time(70d);
+
 
 	private static final long tickSize = 250L;
 	private static final int minNbOfBidders = 5;
+
+	private static final String routingTablePath= "src/main/resources/maps/RoutingTable";
 
 
 	/**
@@ -114,10 +119,10 @@ public class NycExperiment {
 		System.out.println(System.getProperty("os.name") + " "
 			      + System.getProperty("os.version") + " "
 			      + System.getProperty("os.arch"));
-		System.out.println("++++++  attribute               "+attribute+" ++++++");
-		System.out.println("++++++  minNbOfBidders          "+minNbOfBidders+" ++++++");
-		System.out.println("++++++  maxAuctionDurationSoft  "+maxAuctionDurationSoft+" ++++++");
-		System.out.println("++++++  debug                   "+debug+" ++++++");
+		System.out.println("++++++  attribute "+attribute+" ++++++");
+		System.out.println("++++++  minNbOfBidders "+minNbOfBidders+" ++++++");
+		System.out.println("++++++  maxAuctionDurationSoft "+maxAuctionDurationSoft+" ++++++");
+		System.out.println("++++++  debug "+debug+" ++++++");
 
 
 		ScenarioGenerator sg;
@@ -152,6 +157,7 @@ public class NycExperiment {
 							.setTickSize(tickSize)
 							.setTraffic(traffic)
 							.setRidesharing(ridesharing)
+							.setRoutingTablePath(routingTablePath)
 							.build();
 		}
 
@@ -167,7 +173,7 @@ public class NycExperiment {
 //
 	    final OptaplannerSolvers.Builder opFfdFactory =
 	    	      OptaplannerSolvers.builder()
-	    	      .withSolverHeuristic(GeomHeuristics.time(70d))
+	    	      .withSolverHeuristic(heuristic)
 	    	      .withSolverXmlResource(
 	    	        "com/github/rinde/jaamas17/jaamas-solver.xml")
 	    	      .withUnimprovedMsLimit(rpMs)
@@ -239,7 +245,7 @@ public class NycExperiment {
                     opFfdFactory.withSolverXmlResource(
                             "com/github/rinde/jaamas17/jaamas-solver.xml")
                             .withName("Central_" + attribute)
-                            .withSolverHeuristic(GeomHeuristics.time(70d))
+                            .withSolverHeuristic(heuristic)
                             .withUnimprovedMsLimit(centralUnimprovedMs),
                     "Central_" + attribute));
         }
@@ -259,29 +265,32 @@ public class NycExperiment {
 				.addEventHandler(AddParcelEvent.class, AddParcelEvent.defaultHandler())
 				.addEventHandler(AddVehicleEvent.class,
 						TruckFactory.DefaultTruckFactory.builder()
-						.setRoutePlanner(RtSolverRoutePlanner.supplier(
+							.setRouteHeuristic(heuristic)
+							.setRoutePlanner(RtSolverRoutePlanner.supplier(
 								opFfdFactory.withSolverXmlResource(
 										"com/github/rinde/jaamas17/jaamas-solver.xml")
 								.withName(masSolverName)
 								.withUnimprovedMsLimit(rpMs)
 								.withTimeMeasurementsEnabled(computationsLogging)
-                                .withSolverHeuristic(GeomHeuristics.time(70d))
+                                .withSolverHeuristic(heuristic)
                                 .buildRealtimeSolverSupplier()))
-						.setCommunicator(
+							.setCommunicator(
 								RtSolverBidder.realtimeBuilder(objFunc,
 										opFfdFactory.withSolverXmlResource(
 												"com/github/rinde/jaamas17/jaamas-solver.xml")
 										.withName(masSolverName)
 										.withUnimprovedMsLimit(bMs)
-                                        .withSolverHeuristic(GeomHeuristics.time(70d))
+                                        .withSolverHeuristic(heuristic)
                                         .withTimeMeasurementsEnabled(computationsLogging)
 										.buildRealtimeSolverSupplier())
+
 								.withBidFunction(bf)
+								.withGeomHeuristic(heuristic)
 								.withReauctionsEnabled(enableReauctions)
 								.withReauctionCooldownPeriod(reauctCooldownPeriodMs))
-						.setLazyComputation(false)
-						.setRouteAdjuster(RouteFollowingVehicle.delayAdjuster())
-						.build())
+							.setLazyComputation(false)
+							.setRouteAdjuster(RouteFollowingVehicle.delayAdjuster())
+							.build())
 				.addModel(AuctionCommModel.builder(DoubleBid.class)
 						.withStopCondition(
 								AuctionStopConditions.and(
@@ -330,8 +339,9 @@ public class NycExperiment {
 			builder = builder.addModel(RtCentral.builder(opBuilder.buildRealtimeSolverSupplier()));
 		} else {
 			builder = builder.addModel(RtCentral.builder(opBuilder.buildRealtimeSolverSupplier())
-					.withContinuousUpdates(true)
-					.withThreadGrouping(true));
+//					.withContinuousUpdates(true)
+//					.withThreadGrouping(true)
+			);
 		}
 
 		return builder.build();

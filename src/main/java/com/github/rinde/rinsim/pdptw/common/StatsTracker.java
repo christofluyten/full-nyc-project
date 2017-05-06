@@ -73,7 +73,7 @@ public final class StatsTracker extends AbstractModelVoid implements
   Map<Parcel,Long> parcelPickupTime = new HashMap<>();
   Map<Parcel,Long> parcelTardiness = new HashMap<>();
 
-  RoutingTable routingTable = RoutingTableSupplier.getRoutingTable("src/main/resources/maps/RoutingTable");
+//  RoutingTable routingTable = RoutingTableSupplier.get("src/main/resources/maps/RoutingTable");
 
   enum StatisticsEventType {
     PICKUP_TARDINESS, DELIVERY_TARDINESS, ALL_VEHICLES_AT_DEPOT;
@@ -270,20 +270,20 @@ public final class StatsTracker extends AbstractModelVoid implements
             StatisticsEventType.DELIVERY_TARDINESS, this, p, v, tardiness,
             pme.time));
         }
-        if(Math.abs(dTardiness - parcelTardiness.get(p))>10){
-          long startTime = parcelPickupTime.get(p);
-          long realTime = pme.time-startTime;
-          System.out.println("realTime =           "+ realTime);
-          long tableTime = (long) routingTable.getRoadPathTo(p.getPickupLocation(),p.getDeliveryLocation()).getTravelTime();
-          System.out.println("tableTime =          "+ tableTime);
-          System.out.println("diff =               "+ (realTime-tableTime));
-          System.out.println("OrderAnnounceTime:   "+ p.getOrderAnnounceTime());
-          System.out.println("Start pickup:          " + startTime);
-          System.out.println("PickupTimeWindow:    "+p.getPickupTimeWindow());
-          System.out.println("DeliveryTimeWindow:  " +p.getDeliveryTimeWindow());
-          System.out.println("Start delivery:      " +pme.time);
-          System.out.println();
-        }
+//        if(Math.abs(dTardiness - parcelTardiness.get(p))>10){
+//          long startTime = parcelPickupTime.get(p);
+//          long realTime = pme.time-startTime;
+//          System.out.println("realTime =           "+ realTime);
+//          long tableTime = (long) routingTable.getRoadPathTo(p.getPickupLocation(),p.getDeliveryLocation()).getTravelTime();
+//          System.out.println("tableTime =          "+ tableTime);
+//          System.out.println("diff =               "+ (realTime-tableTime));
+//          System.out.println("OrderAnnounceTime:   "+ p.getOrderAnnounceTime());
+//          System.out.println("Start pickup:          " + startTime);
+//          System.out.println("PickupTimeWindow:    "+p.getPickupTimeWindow());
+//          System.out.println("DeliveryTimeWindow:  " +p.getDeliveryTimeWindow());
+//          System.out.println("Start delivery:      " +pme.time);
+//          System.out.println();
+//        }
 
       } else if (e.getEventType() == PDPModelEventType.END_DELIVERY) {
         totalDeliveries++;

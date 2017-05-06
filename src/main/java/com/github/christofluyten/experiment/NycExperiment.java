@@ -183,8 +183,8 @@ public class NycExperiment {
 //					.computeDistributed()
 				 .computeLocal()
 				.withRandomSeed(123)
-				.withThreads((int) Math
-						.floor((Runtime.getRuntime().availableProcessors() - 1) / 2d))
+//				.withThreads((int) Math
+//						.floor((Runtime.getRuntime().availableProcessors() - 1) / 2d))
 				.repeat(3)
 					.withWarmup(30000);
 		} else {
@@ -298,8 +298,9 @@ public class NycExperiment {
 			b = b.addModel(RtSolverModel.builder());
 		} else {
 			b = b.addModel(RtSolverModel.builder()
-					.withThreadPoolSize(3)
-					.withThreadGrouping(true));
+//					.withThreadPoolSize(3)
+//					.withThreadGrouping(true)
+			);
 		}
 
 		if (computationsLogging) {

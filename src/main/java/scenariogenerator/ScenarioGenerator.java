@@ -121,7 +121,7 @@ public class ScenarioGenerator {
     }
 
     private void setScenarioFileFullName() {
-        getIoHandler().setScenarioFileFullName(getIoHandler().getScenarioFileName() + "_" + getIoHandler().getAttribute() + "_" + getIoHandler().getScenarioStartTime().getShortStringDateForPath() + "_"
+        getIoHandler().setScenarioFileFullName(getIoHandler().getScenarioFileName() + getIoHandler().getAttribute() + "_" + getIoHandler().getScenarioStartTime().getShortStringDateForPath() + "_"
                 + getIoHandler().getScenarioEndTime().getShortStringDateForPath());
     }
 

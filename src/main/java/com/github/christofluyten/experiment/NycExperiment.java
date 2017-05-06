@@ -62,6 +62,8 @@ public class NycExperiment {
 	private final static boolean ridesharing = false;
 	private static String attribute = "noRidesharing";
 	private static boolean debug = true;
+	private static boolean gui = false;
+
 
 	private static final String taxiDataDirectory = "/media/christof/Elements/Taxi_data/";
 	private static final String travelTimesDirectory = "/media/christof/Elements/Traffic_estimates/"; //path to director with the travel_times
@@ -177,27 +179,33 @@ public class NycExperiment {
 				.repeat(3)
 					.withWarmup(30000);
 		} else {
-			experimentBuilder = experimentBuilder
-					.withThreads(1)
-					.showGui(View.builder()
-							.with(RoadUserRenderer.builder()
+					if(gui){
+						experimentBuilder = experimentBuilder
+								.withThreads(1)
+								.showGui(View.builder()
+										.with(RoadUserRenderer.builder()
 //								.withToStringLabel()
-									.withColorAssociation(Truck.class, new RGB(204, 0, 0))
-									.withColorAssociation(Depot.class, new RGB(0, 0, 255)))
-							.with(RouteRenderer.builder())
-							.with(PDPModelRenderer.builder())
-							.with(GraphRoadModelRenderer.builder()
+												.withColorAssociation(Truck.class, new RGB(204, 0, 0))
+												.withColorAssociation(Depot.class, new RGB(0, 0, 255)))
+										.with(RouteRenderer.builder())
+										.with(PDPModelRenderer.builder())
+										.with(GraphRoadModelRenderer.builder()
 //								.withDirectionArrows()
 //								.withStaticRelativeSpeedVisualization()
 //								.withDynamicRelativeSpeedVisualization()
-							)
-							.with(AuctionPanel.builder())
-							.with(RoutePanel.builder())
-                            .with(TimeLinePanel.builder())
+										)
+										.with(AuctionPanel.builder())
+										.with(RoutePanel.builder())
+										.with(TimeLinePanel.builder())
 //							.with(RtSolverPanel.builder())
-                            .withResolution(12800, 10240)
-                            .withAutoPlay()
-							.withAutoClose());
+										.withResolution(12800, 10240)
+										.withAutoPlay()
+										.withAutoClose());
+					} else {
+						experimentBuilder = experimentBuilder
+								.withThreads(1);
+					}
+
 
 		}
 

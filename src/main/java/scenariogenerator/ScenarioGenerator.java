@@ -137,22 +137,22 @@ public class ScenarioGenerator {
         this.debug = debug;
         Scenario.Builder builder = Scenario.builder();
         addGeneralProperties(builder);
-        if (debug) {
-            builder.addModel(
-                    PDPGraphRoadModel.builderForGraphRm(
-                            CachedNycGraphRoadModelImpl.builder(
-                                            ListenableGraph.supplier(DotGraphIO.getMultiAttributeDataGraphSupplier(Paths.get(getIoHandler().getMapFilePath()))),this.builder.routingTablePath)
-                                    .withSpeedUnit(NonSI.KILOMETERS_PER_HOUR)
-                                    .withDistanceUnit(SI.KILOMETER)
-                    )
-                            .withAllowVehicleDiversion(true))
-                    .addEvent(TimeOutEvent.create(this.builder.scenarioDuration))
-                    .scenarioLength(this.builder.scenarioDuration);
-//                    .addEvent(TimeOutEvent.create(scenarioDuration))
-//                    .scenarioLength(scenarioDuration);
-            addPassengersDebug(builder);
-//            addPassengers(builder);
-        } else {
+//        if (debug) {
+//            builder.addModel(
+//                    PDPGraphRoadModel.builderForGraphRm(
+//                            CachedNycGraphRoadModelImpl.builder(
+//                                            ListenableGraph.supplier(DotGraphIO.getMultiAttributeDataGraphSupplier(Paths.get(getIoHandler().getMapFilePath()))),this.builder.routingTablePath)
+//                                    .withSpeedUnit(NonSI.KILOMETERS_PER_HOUR)
+//                                    .withDistanceUnit(SI.KILOMETER)
+//                    )
+//                            .withAllowVehicleDiversion(true))
+//                    .addEvent(TimeOutEvent.create(this.builder.scenarioDuration))
+//                    .scenarioLength(this.builder.scenarioDuration);
+////                    .addEvent(TimeOutEvent.create(scenarioDuration))
+////                    .scenarioLength(scenarioDuration);
+//            addPassengersDebug(builder);
+////            addPassengers(builder);
+//        } else {
             builder.addModel(
                     PDPGraphRoadModel.builderForGraphRm(
                             CachedNycGraphRoadModelImpl.builder(
@@ -164,7 +164,7 @@ public class ScenarioGenerator {
                     .addEvent(TimeOutEvent.create(this.builder.scenarioDuration))
                     .scenarioLength(this.builder.scenarioDuration);
             addPassengers(builder);
-        }
+//        }
         addTaxis(builder);
 //            addJFK(builder);
 //            addManhattan(builder);
@@ -203,7 +203,6 @@ public class ScenarioGenerator {
             if (totalCount % 20 == 0) {
                 addedCount++;
                 Taxi taxi = (Taxi) object;
-//            builder.addEvent(AddVehicleEvent.create(taxi.getStartTime(TAXI_START_TIME), VehicleDTO.builder()
                 builder.addEvent(AddVehicleEvent.create(-1, VehicleDTO.builder()
                         .speed(this.builder.maxVehicleSpeedKmh)
                         .startPosition(taxi.getStartPoint())
@@ -213,10 +212,10 @@ public class ScenarioGenerator {
 
 
             totalCount++;
-            if (debug && addedCount >= 20) {
-//            if (addedCount >= 20) {
-                break;
-            }
+//            if (debug && addedCount >= 20) {
+////            if (addedCount >= 20) {
+//                break;
+//            }
         }
         System.out.println(addedCount + " taxi's added of the " + totalCount);
     }

@@ -61,7 +61,7 @@ public class NycExperiment {
 	private final static boolean computationsLogging = false;
 	private final static boolean ridesharing = false;
 	private static String attribute = "noRidesharing";
-	private static boolean debug = false;
+	private static boolean debug = true;
 
 	private static final String taxiDataDirectory = "/media/christof/Elements/Taxi_data/";
 	private static final String travelTimesDirectory = "/media/christof/Elements/Traffic_estimates/"; //path to director with the travel_times
@@ -126,23 +126,6 @@ public class NycExperiment {
 
 
 		ScenarioGenerator sg;
-		if(debug){
-			sg = ScenarioGenerator.builder()
-					.setCutLength(cutLength)
-					.setDeliveryDuration(deliveryDuration)
-					.setPickupDuration(pickupDuration)
-					.setMaxVehicleSpeedKmh(maxVehicleSpeedKmh)
-					.setScenarioDuration(scenarioDurationDebug)
-					.setScenarioName("debug")
-					.setTaxiDataDirectory(taxiDataDirectory)
-					.setTravelTimesDirectory(travelTimesDirectory)
-					.setTaxiDataStartTime(taxiDataStartTime)
-					.setTaxiDataEndTime(taxiDataEndTime)
-					.setTickSize(tickSize)
-					.setTraffic(traffic)
-					.setRidesharing(ridesharing)
-					.build();
-		} else{
 			sg = ScenarioGenerator.builder()
 							.setCutLength(cutLength)
 							.setDeliveryDuration(deliveryDuration)
@@ -159,7 +142,7 @@ public class NycExperiment {
 							.setRidesharing(ridesharing)
 							.setRoutingTablePath(routingTablePath)
 							.build();
-		}
+
 
 		Scenario scenario = sg.generateTaxiScenario(debug);
 
@@ -189,8 +172,8 @@ public class NycExperiment {
 //					.computeDistributed()
 				 .computeLocal()
 				.withRandomSeed(123)
-//				.withThreads((int) Math
-//						.floor((Runtime.getRuntime().availableProcessors() - 1) / 2d))
+				.withThreads((int) Math
+						.floor((Runtime.getRuntime().availableProcessors() - 1) / 2d))
 				.repeat(3)
 					.withWarmup(30000);
 		} else {
@@ -307,8 +290,8 @@ public class NycExperiment {
 			b = b.addModel(RtSolverModel.builder());
 		} else {
 			b = b.addModel(RtSolverModel.builder()
-//					.withThreadPoolSize(3)
-//					.withThreadGrouping(true)
+					.withThreadPoolSize(3)
+					.withThreadGrouping(true)
 			);
 		}
 
@@ -339,8 +322,8 @@ public class NycExperiment {
 			builder = builder.addModel(RtCentral.builder(opBuilder.buildRealtimeSolverSupplier()));
 		} else {
 			builder = builder.addModel(RtCentral.builder(opBuilder.buildRealtimeSolverSupplier())
-//					.withContinuousUpdates(true)
-//					.withThreadGrouping(true)
+					.withContinuousUpdates(true)
+					.withThreadGrouping(true)
 			);
 		}
 

@@ -343,11 +343,12 @@ public class NycExperiment {
 				.addEventHandler(TimeOutEvent.class, TimeOutEvent.ignoreHandler())
 				.addEventHandler(AddDepotEvent.class, AddDepotEvent.defaultHandler())
 				.addEventHandler(AddParcelEvent.class, AddParcelEvent.defaultHandler())
-				.addEventHandler(AddVehicleEvent.class, RtCentral.vehicleHandler())
+				.addEventHandler(AddVehicleEvent.class, RtCentral.vehicleHandler(heuristic))
 				.setName(name);
 
 		if (debug) {
-			builder = builder.addModel(RtCentral.builder(opBuilder.buildRealtimeSolverSupplier()));
+			builder = builder.addModel(RtCentral.builder(opBuilder.buildRealtimeSolverSupplier())
+			);
 		} else {
 			builder = builder.addModel(RtCentral.builder(opBuilder.buildRealtimeSolverSupplier())
 					.withContinuousUpdates(true)

@@ -165,7 +165,6 @@ public class ScenarioGenerator {
                             .withAllowVehicleDiversion(true))
                     .scenarioLength(this.builder.scenarioDuration);
         addPassengers(builder);
-//        }
 //        addTaxis(builder);
 //            addJFK(builder);
 //            addManhattan(builder);
@@ -203,7 +202,7 @@ public class ScenarioGenerator {
         int totalCount = 0;
         int addedCount = 0;
         for (SimulationObject object : taxis) {
-            if (totalCount % 50 == 0) {
+            if (totalCount % 20 == 0) {
                 addedCount++;
                 Taxi taxi = (Taxi) object;
                 builder.addEvent(AddVehicleEvent.create(-1, VehicleDTO.builder()
@@ -234,7 +233,7 @@ public class ScenarioGenerator {
         int addedCount = 0;
         RoutingTable routingTable = RoutingTableSupplier.get(this.builder.routingTablePath);
         for (SimulationObject object : passengers) {
-            if (true && (totalCount % 50 == 0)) {
+            if (true && (totalCount % 20 == 0)) {
                 addedCount++;
                 Passenger passenger = (Passenger) object;
                 long pickupStartTime = passenger.getStartTime(this.builder.taxiDataStartTime);

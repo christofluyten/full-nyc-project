@@ -2,6 +2,7 @@ package com.github.rinde.rinsim.core.model.road;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.measure.Measure;
@@ -43,13 +44,35 @@ public class CachedNycGraphRoadModelImpl extends GraphRoadModelImpl {
 	@Override
 	public RoadPath getPathTo(Point from, Point to, Unit<Duration> timeUnit,
 			Measure<Double, Velocity> speed, GeomHeuristic heuristic) {
+//		System.out.println("using getPathTo in CNGRMI");
+
 		return routingTable.getRoadPathTo(from, to);
 		
+	}
+	@Override
+	public List<Point> getShortestPathTo(Point from, Point to) {
+		final List<Point> path = new ArrayList<>();
+		Point start = from;
+		if (isOnConnection(from)) {
+			start = asLoc(from).conn.get().to();
+			path.add(from);
+		}
+
+		Point end = to;
+		if (isOnConnection(to)) {
+			end = asLoc(to).conn.get().from();
+		}
+		path.addAll(doGetShortestPathTo(start, end));
+		if (isOnConnection(to)) {
+			path.add(to);
+		}
+		return path;
 	}
 
 	// overrides internal func to use the routing table
 	@Override
 	protected List<Point> doGetShortestPathTo(Point from, Point to) {
+		System.out.println("using doGetShortestPathTo in CNGRMI");
 		return routingTable.getRoadPathTo(from, to).getPath();
 	}
 
@@ -57,6 +80,7 @@ public class CachedNycGraphRoadModelImpl extends GraphRoadModelImpl {
 							  Unit<Duration> timeUnit, Measure<Double, Velocity> maxSpeed,
 							  GeomHeuristic heuristic) {
 		final Optional<? extends Connection<?>> conn = getConnection(object);
+//		System.out.println("using getPathTo MovingRoaduser in CNGRMI");
 		if (conn.isPresent()) {
 			final double connectionPercentage =
 					Point.distance(getPosition(object), conn.get().to())
@@ -71,6 +95,11 @@ public class CachedNycGraphRoadModelImpl extends GraphRoadModelImpl {
 		}
 		return getPathTo(getPosition(object), destination, timeUnit, maxSpeed,
 				heuristic);
+	}
+
+	@Override
+	public RoadModelSnapshot getSnapshot() {
+		return snapshot;
 	}
 
 

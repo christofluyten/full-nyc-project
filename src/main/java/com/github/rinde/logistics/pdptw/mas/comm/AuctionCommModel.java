@@ -370,6 +370,7 @@ public class AuctionCommModel<T extends Bid<T>>
     int failedAuctions;
     long lastUnsuccessfulAuctionTime;
     long lastAuctionAttemptTime;
+    int nbOfBidders;
 
     ParcelAuctioneer(Parcel p) {
       parcel = p;
@@ -379,6 +380,7 @@ public class AuctionCommModel<T extends Bid<T>>
       callback = Optional.absent();
       lastUnsuccessfulAuctionTime = -1L;
       lastAuctionAttemptTime = p.getOrderAnnounceTime();
+      nbOfBidders = communicators.size();
     }
 
     void initialAuction(long time) {
@@ -406,6 +408,7 @@ public class AuctionCommModel<T extends Bid<T>>
 
       if (bidderFilter.minimalAmountOfBidders>0){
         bidders = filterBidders(communicators, parcel);
+        nbOfBidders = bidders.size();
       }
 
       for (final Bidder<T> b : bidders) {
@@ -462,9 +465,11 @@ public class AuctionCommModel<T extends Bid<T>>
               + auctionStartTime + ", current time: " + time + ".");
         }
 
+
+
         if (stopCondition.apply(Collections.unmodifiableSet(bids),
-          communicators.size(), auctionStartTime, time)) {
-          notify = true;
+          nbOfBidders, auctionStartTime, time)) {
+            notify = true;
           LOGGER.trace(
             "{} >>>> {} end of auction for {}, received {} bids, duration {} "
               + "<<<<",

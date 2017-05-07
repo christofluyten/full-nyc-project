@@ -15,6 +15,7 @@ import com.github.rinde.rinsim.geom.RoutingTableSupplier;
 import com.github.rinde.rinsim.geom.io.DotGraphIO;
 import com.github.rinde.rinsim.pdptw.common.*;
 import com.github.rinde.rinsim.scenario.Scenario;
+import com.github.rinde.rinsim.scenario.StopConditions;
 import com.github.rinde.rinsim.scenario.TimeOutEvent;
 import com.github.rinde.rinsim.util.TimeWindow;
 import data.area.Area;
@@ -137,6 +138,7 @@ public class ScenarioGenerator {
         this.debug = debug;
         Scenario.Builder builder = Scenario.builder();
         addGeneralProperties(builder);
+        addTaxis(builder);
 //        if (debug) {
 //            builder.addModel(
 //                    PDPGraphRoadModel.builderForGraphRm(
@@ -161,11 +163,10 @@ public class ScenarioGenerator {
                                     .withDistanceUnit(SI.KILOMETER)
                     )
                             .withAllowVehicleDiversion(true))
-                    .addEvent(TimeOutEvent.create(this.builder.scenarioDuration))
                     .scenarioLength(this.builder.scenarioDuration);
-            addPassengers(builder);
+        addPassengers(builder);
 //        }
-        addTaxis(builder);
+//        addTaxis(builder);
 //            addJFK(builder);
 //            addManhattan(builder);
 //            addNYC(builder);
@@ -186,7 +187,9 @@ public class ScenarioGenerator {
                 .addModel(
                         DefaultPDPModel.builder()
                                 .withTimeWindowPolicy(TimeWindowPolicy.TimeWindowPolicies.TARDY_ALLOWED))
-                .setStopCondition(StatsStopConditions.timeOutEvent())
+                .setStopCondition(StopConditions.and(
+                        StatsStopConditions.vehiclesDone(),
+                        StatsStopConditions.timeOutEvent()))
                 .addEvent(AddDepotEvent.create(-1, new Point(-73.9778627, -40.7888872)))
         ;
     }

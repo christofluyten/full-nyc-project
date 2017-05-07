@@ -100,7 +100,7 @@ class Positioner {
                             }
                         }
 
-                        if (smallestDistance < 1000) {
+                        if (smallestDistance < 1000 ) {
                             count++;
                             double distToStart = getDistance(closestLink.getStartX(),closestLink.getStartY(),object.getStartLon(),object.getStartLat());
                             double distToEnd = getDistance(closestLink.getEndX(),closestLink.getEndY(),object.getStartLon(),object.getStartLat());
@@ -117,11 +117,21 @@ class Positioner {
                                 getPositionedObjects().add(object);
                             }
                         } else {
-                            System.out.println("objects's pickup location too far from the street " + object.getStartTime() + " " + smallestDistance);
+                            if(object instanceof  Taxi){
+                                object.setStartX(-73.9778627);
+                                object.setStartY(-40.7888872);
+                                if(commander.execute(object)){
+                                    object.write(writer);
+                                    getPositionedObjects().add(object);
+                                }
+
+                            } else {
+                                System.out.println("objects's pickup location too far from the street " + object.getStartTime() + " " + smallestDistance);
+                            }
                         }
 
                     } catch (NullPointerException e){
-                        System.out.println("no links were found in de ptclMap for start point " +object.getStartLon() +" "+ object.getStartLat());
+                            System.out.println("no links were found in de ptclMap for start point " +object.getStartLon() +" "+ object.getStartLat());
                     }
 
                 } else {
@@ -176,7 +186,7 @@ class Positioner {
 
             }
         }
-        System.out.println("expanding " + count+ " "+ linkSet.size());
+//        System.out.println("expanding " + count+ " "+ linkSet.size());
         return linkSet;
     }
 

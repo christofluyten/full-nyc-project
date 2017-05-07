@@ -517,7 +517,26 @@ public class AuctionCommModel<T extends Bid<T>>
               LOGGER.info(
                 "{} Auction completed successfully, transfer {} to {}.",
                 this, parcel, winner.get());
-              winner.get().receiveParcel(this, parcel, auctionStartTime);
+              try{
+                if(bids.size()== 1){
+                  System.out.println("1 bid");
+                  System.out.println("winner " + winner.toString());
+                }
+                winner.get().receiveParcel(this, parcel, auctionStartTime);
+
+              } catch (Exception e){
+                System.out.println("bids "+ bids.toString());
+                System.out.println("bids size "+ bids.size());
+                System.out.println("winningBid "+ winningBid);
+                System.out.println("Collections.min(bids) "+ Collections.min(bids));
+                System.out.println("Optional.of(winningBid.getBidder()) "+ Optional.of(winningBid.getBidder()));
+                System.out.println("winner " + winner.toString());
+                System.out.println();
+
+                e.printStackTrace();
+                throw new IllegalStateException();
+              }
+
             } else {
               failedAuctions++;
             }

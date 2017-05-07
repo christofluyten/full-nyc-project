@@ -323,7 +323,7 @@ public class RtSolverBidder
             Solvers.computeStats(state, ImmutableList.of(currentRoute),
                     geomHeuristic);
 
-//    final Parcel lastReceivedParcel = Iterables.getLast(assignedParcels);
+    final Parcel lastReceivedParcel = Iterables.getLast(assignedParcels);
 
     if (!reauctioning.get()) {
       // find all swappable parcels, a parcel can be swapped if it is not yet in
@@ -338,7 +338,7 @@ public class RtSolverBidder
                 && !pdpModel.get().getParcelState(ap).isTransitionState()
                 && !state.getVehicles().get(0).getDestination().asSet()
                 .contains(ap)
-//                && !ap.equals(lastReceivedParcel)
+                && !ap.equals(lastReceivedParcel)
                 ) {
           swappableParcels.add(ap);
         }
@@ -367,7 +367,7 @@ public class RtSolverBidder
       // this parcel from the route will yield the greatest cost reduction.
       if (toSwap != null
               && !reauctioning.get()
-//              && !toSwap.equals(lastReceivedParcel)
+              && !toSwap.equals(lastReceivedParcel)
               ) {
 
         final Auctioneer<DoubleBid> auct = parcelAuctioneers.get(toSwap);

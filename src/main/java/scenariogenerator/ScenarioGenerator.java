@@ -258,7 +258,7 @@ public class ScenarioGenerator {
                         AddParcelEvent.create(parcelBuilder.buildDTO()));
             }
             totalCount++;
-//            if (addedCount >= 12) {
+//            if (debug && addedCount >= 12) {
 //                break;
 //            }
 

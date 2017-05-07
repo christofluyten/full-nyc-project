@@ -12,6 +12,7 @@ import com.github.rinde.rinsim.central.rt.RtCentral;
 import com.github.rinde.rinsim.central.rt.RtSolverModel;
 import com.github.rinde.rinsim.core.Simulator;
 import com.github.rinde.rinsim.core.model.pdp.Depot;
+import com.github.rinde.rinsim.core.model.pdp.Vehicle;
 import com.github.rinde.rinsim.core.model.time.RealtimeClockLogger;
 import com.github.rinde.rinsim.core.model.time.RealtimeClockLogger.LogEntry;
 import com.github.rinde.rinsim.core.model.time.RealtimeTickInfo;
@@ -62,7 +63,7 @@ public class NycExperiment {
 	private final static boolean ridesharing = true;
 	private static String attribute = "noRidesharing";
 	private static boolean debug = true;
-	private static boolean gui = false;
+	private static boolean gui = true;
 
 
 	private static final String taxiDataDirectory = "/media/christof/Elements/Taxi_data/";
@@ -186,6 +187,7 @@ public class NycExperiment {
 										.with(RoadUserRenderer.builder()
 //								.withToStringLabel()
 												.withColorAssociation(Truck.class, new RGB(204, 0, 0))
+												.withColorAssociation(Vehicle.class,new RGB(100,0,0))
 												.withColorAssociation(Depot.class, new RGB(0, 0, 255)))
 										.with(RouteRenderer.builder())
 										.with(PDPModelRenderer.builder())
@@ -194,9 +196,9 @@ public class NycExperiment {
 //								.withStaticRelativeSpeedVisualization()
 //								.withDynamicRelativeSpeedVisualization()
 										)
-										.with(AuctionPanel.builder())
-										.with(RoutePanel.builder())
-										.with(TimeLinePanel.builder())
+//										.with(AuctionPanel.builder())
+//										.with(RoutePanel.builder())
+//										.with(TimeLinePanel.builder())
 //							.with(RtSolverPanel.builder())
 										.withResolution(12800, 10240)
 										.withAutoPlay()
@@ -225,21 +227,39 @@ public class NycExperiment {
 			OptaplannerSolvers.Builder opFfdFactory, ObjectiveFunction objFunc) {
 
 		final List<MASConfiguration> configs = new ArrayList<>();
-		configs.add(createMAS(opFfdFactory, objFunc, rpMs, bMs,
-				maxAuctionDurationSoft, enableReauctions, reactCooldownPeriodMs, computationsLogging));
-		
-		final String solverKey =
-				"Step-counting-hill-climbing-with-entity-tabu-and-strategic-oscillation";
-        if (!debug) {
-            final long centralUnimprovedMs = 10000L;
-            configs.add(createCentral(
-                    opFfdFactory.withSolverXmlResource(
-                            "com/github/rinde/jaamas17/jaamas-solver.xml")
-                            .withName("Central_" + attribute)
-                            .withSolverHeuristic(heuristic)
-                            .withUnimprovedMsLimit(centralUnimprovedMs),
-                    "Central_" + attribute));
-        }
+		if (debug){
+			if(!debug) {
+				configs.add(createMAS(opFfdFactory, objFunc, rpMs, bMs,
+						maxAuctionDurationSoft, enableReauctions, reactCooldownPeriodMs, computationsLogging));
+				System.out.println("MAS");
+			}else {
+				final String solverKey =
+						"Step-counting-hill-climbing-with-entity-tabu-and-strategic-oscillation";
+				final long centralUnimprovedMs = 10000L;
+				configs.add(createCentral(
+						opFfdFactory.withSolverXmlResource(
+								"com/github/rinde/jaamas17/jaamas-solver.xml")
+								.withName("Central_" + attribute)
+								.withSolverHeuristic(heuristic)
+								.withUnimprovedMsLimit(centralUnimprovedMs),
+						"Central_" + attribute));
+				System.out.println("Central");
+
+			}
+		} else {
+				configs.add(createMAS(opFfdFactory, objFunc, rpMs, bMs,
+						maxAuctionDurationSoft, enableReauctions, reactCooldownPeriodMs, computationsLogging));
+				final String solverKey =
+						"Step-counting-hill-climbing-with-entity-tabu-and-strategic-oscillation";
+				final long centralUnimprovedMs = 10000L;
+				configs.add(createCentral(
+						opFfdFactory.withSolverXmlResource(
+								"com/github/rinde/jaamas17/jaamas-solver.xml")
+								.withName("Central_" + attribute)
+								.withSolverHeuristic(heuristic)
+								.withUnimprovedMsLimit(centralUnimprovedMs),
+						"Central_" + attribute));
+		}
 		System.out.println("created the mainConfigs");
 		return configs;
 	}

@@ -202,7 +202,7 @@ public class ScenarioGenerator {
         int totalCount = 0;
         int addedCount = 0;
         for (SimulationObject object : taxis) {
-            if (totalCount % 20 == 0) {
+            if (totalCount % this.builder.amountFilter == 0) {
                 addedCount++;
                 Taxi taxi = (Taxi) object;
                 builder.addEvent(AddVehicleEvent.create(-1, VehicleDTO.builder()
@@ -233,7 +233,7 @@ public class ScenarioGenerator {
         int addedCount = 0;
         RoutingTable routingTable = RoutingTableSupplier.get(this.builder.routingTablePath);
         for (SimulationObject object : passengers) {
-            if (true && (totalCount % 20 == 0)) {
+            if (true && (totalCount % this.builder.amountFilter == 0)) {
                 addedCount++;
                 Passenger passenger = (Passenger) object;
                 long pickupStartTime = passenger.getStartTime(this.builder.taxiDataStartTime);
@@ -352,6 +352,7 @@ public class ScenarioGenerator {
         private boolean ridesharing;
         private boolean routingTable;
         private String routingTablePath;
+        private int amountFilter;
 
         Builder() {
             taxiDataDirectory = "/media/christof/Elements/Taxi_data/";
@@ -368,6 +369,7 @@ public class ScenarioGenerator {
             tickSize = 250L;
             ridesharing = false;
             routingTable = false;
+            amountFilter = 1;
 
         }
 
@@ -440,6 +442,11 @@ public class ScenarioGenerator {
         public Builder setRoutingTablePath(String routingTablePath) {
             this.routingTable = true;
             this.routingTablePath = routingTablePath;
+            return this;
+        }
+
+        public Builder setAmountFilter(int amountFilter) {
+            this.amountFilter = amountFilter;
             return this;
         }
 

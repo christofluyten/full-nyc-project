@@ -60,10 +60,11 @@ public class NycExperiment {
 	private final static ObjectiveFunction objFunc = Gendreau06ObjectiveFunction.instance(70);
 	private final static boolean enableReauctions = true;
 	private final static boolean computationsLogging = false;
-	private final static boolean ridesharing = true;
+	private final static boolean ridesharing = false;
 	private static String attribute = "noRidesharing";
 	private static boolean debug = true;
 	private static boolean gui = true;
+	private final static int amountFilter = 1;
 
 
 	private static final String taxiDataDirectory = "/media/christof/Elements/Taxi_data/";
@@ -125,7 +126,9 @@ public class NycExperiment {
 		System.out.println("++++++  attribute "+attribute+" ++++++");
 		System.out.println("++++++  minNbOfBidders "+minNbOfBidders+" ++++++");
 		System.out.println("++++++  maxAuctionDurationSoft "+maxAuctionDurationSoft+" ++++++");
+		System.out.println("++++++  amountFilter "+amountFilter+" ++++++");
 		System.out.println("++++++  debug "+debug+" ++++++");
+
 
 
 		ScenarioGenerator sg;
@@ -144,6 +147,7 @@ public class NycExperiment {
 							.setTraffic(traffic)
 							.setRidesharing(ridesharing)
 							.setRoutingTablePath(routingTablePath)
+							.setAmountFilter(amountFilter)
 							.build();
 
 

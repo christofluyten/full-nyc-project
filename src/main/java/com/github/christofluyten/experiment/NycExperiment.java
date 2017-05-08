@@ -65,6 +65,8 @@ public class NycExperiment {
 	private static boolean debug = true;
 	private static boolean gui = true;
 	private final static int amountFilter = 20;
+	private static final int minNbOfBidders = -1;
+
 
 
 	private static final String taxiDataDirectory = "/media/christof/Elements/Taxi_data/";
@@ -91,7 +93,6 @@ public class NycExperiment {
 
 
 	private static final long tickSize = 250L;
-	private static final int minNbOfBidders = 5;
 
 	private static final String routingTablePath= "src/main/resources/maps/RoutingTable";
 

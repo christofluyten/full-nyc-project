@@ -117,17 +117,7 @@ class Positioner {
                                 getPositionedObjects().add(object);
                             }
                         } else {
-                            if(object instanceof  Taxi){
-                                object.setStartX(-73.9778627);
-                                object.setStartY(-40.7888872);
-                                if(commander.execute(object)){
-                                    object.write(writer);
-                                    getPositionedObjects().add(object);
-                                }
-
-                            } else {
                                 System.out.println("objects's pickup location too far from the street " + object.getStartTime() + " " + smallestDistance);
-                            }
                         }
 
                     } catch (NullPointerException e){

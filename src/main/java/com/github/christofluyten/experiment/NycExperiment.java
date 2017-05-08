@@ -60,7 +60,7 @@ public class NycExperiment {
 	private final static ObjectiveFunction objFunc = Gendreau06ObjectiveFunction.instance(70);
 	private final static boolean enableReauctions = true;
 	private final static boolean computationsLogging = false;
-	private final static boolean ridesharing = true;
+	private final static boolean ridesharing = false;
 	private static String attribute = "noRidesharing";
 	private static boolean debug = true;
 	private static boolean gui = true;

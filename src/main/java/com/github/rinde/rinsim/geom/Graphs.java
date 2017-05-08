@@ -183,7 +183,7 @@ public final class Graphs {
      */
     public static <E extends ConnectionData> List<Point> shortestPath(
             Graph<E> graph, final Point from, final Point to, GeomHeuristic h) {
-        System.out.println("Error: using shortestPath in Graphs");
+//        System.out.println("Error: using shortestPath in Graphs");
 
         if (!graph.containsNode(from)) {
             throw new IllegalArgumentException("from should be valid node. " + from);

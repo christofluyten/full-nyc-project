@@ -51,7 +51,7 @@ import java.util.List;
 public class NycExperiment {
 	private final static long rpMs = 100L; //100
 	private final static long bMs = 20L; //20
-	private final static long maxAuctionDurationSoft = 15 * 1000L;  //10000L;
+	private final static long maxAuctionDurationSoft = 10 * 1000L;  //10000L;
 	private final static long maxAuctionDurationHard = 30 * 60 * 1000L;
 	private final static long reactCooldownPeriodMs = 60*1000L;
 	private final static BidFunction bf = BidFunctions.BALANCED_HIGH;
@@ -64,7 +64,7 @@ public class NycExperiment {
 	private static String attribute = "noRidesharing";
 	private static boolean debug = true;
 	private static boolean gui = true;
-	private final static int amountFilter = 1;
+	private final static int amountFilter = 20;
 
 
 	private static final String taxiDataDirectory = "/media/christof/Elements/Taxi_data/";
@@ -79,7 +79,7 @@ public class NycExperiment {
 	private static final long deliveryDuration = 30 * 1000L;
 
 
-	private static final int cutLength = 500;                                                  //maximum length in meters of a edge in the graph (or "link" in the "map")
+	private static final int cutLength = 100;                                                  //maximum length in meters of a edge in the graph (or "link" in the "map")
 
 	private static final long scenarioDuration = (1 * 60 * 60 * 1000L) + 1L;
 
@@ -93,7 +93,7 @@ public class NycExperiment {
 	private static final long tickSize = 250L;
 	private static final int minNbOfBidders = 5;
 
-	private static final String routingTablePath= "src/main/resources/maps/RoutingTable";
+	private static final String routingTablePath= "src/main/resources/maps/RoutingTable"+cutLength;
 
 
 	/**
@@ -246,7 +246,7 @@ public class NycExperiment {
 								.withName("Central_" + attribute)
 								.withSolverHeuristic(heuristic)
 								.withUnimprovedMsLimit(centralUnimprovedMs),
-						"Central_" + attribute));
+						"Central_" + attribute+"_aFilter="+amountFilter+"_bFilter="+minNbOfBidders));
 				System.out.println("Central");
 
 			}
@@ -262,7 +262,7 @@ public class NycExperiment {
 								.withName("Central_" + attribute)
 								.withSolverHeuristic(heuristic)
 								.withUnimprovedMsLimit(centralUnimprovedMs),
-						"Central_" + attribute));
+						"Central_" + attribute+"_aFilter="+amountFilter+"_bFilter="+minNbOfBidders));
 		}
 		System.out.println("created the mainConfigs");
 		return configs;

@@ -39,18 +39,28 @@ public class LinkMapHandler {
             }
         }
 
-        Map<String, Link> newLinkMap = Graph.deleteUnvisitedLinks(linkMap);
+        Map<String, Link> newLinkMap = GraphPruner.deleteUnvisitedLinks(linkMap);
         System.out.println("makeLinkMap4");
+
+        double totalLength= 0;
+        double maxLength = 0;
+        for(String id:newLinkMap.keySet()){
+            Link link = newLinkMap.get(id);
+            totalLength += link.getLengthInM();
+            if (link.getLengthInM()>maxLength){
+                maxLength = link.getLengthInM();
+            }
+        }
+        System.out.println();
+        System.out.println("before cut");
+        System.out.println("maxLength = " +maxLength);
+        System.out.println("avg length = " + (totalLength/newLinkMap.size()));
+        System.out.println();
 
         if(ioHandler.getWithTraffic()){
             TravelTimesHandler.setTraffic(newLinkMap,ioHandler);
         }
-        System.out.println("makeLinkMap5");
-
         IOHandler.writeLinkMap(newLinkMap,"");
-        System.out.println("makeLinkMap6");
-
-
     }
 
 
@@ -93,6 +103,20 @@ public class LinkMapHandler {
             }
         }
 
+        double totalLength= 0;
+        double maxLength = 0;
+        for(String id:newLinkMap.keySet()){
+            Link link = newLinkMap.get(id);
+            totalLength += link.getLengthInM();
+            if (link.getLengthInM()>maxLength){
+                maxLength = link.getLengthInM();
+            }
+        }
+        System.out.println();
+        System.out.println("after cut");
+        System.out.println("maxLength = " +maxLength);
+        System.out.println("avg length = " + (totalLength/newLinkMap.size()));
+        System.out.println();
         IOHandler.writeLinkMap(newLinkMap, String.valueOf((int)maximumStreetLength));
         System.out.println("There are "+extaLinks+" links added." );
     }

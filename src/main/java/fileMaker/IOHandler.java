@@ -46,7 +46,7 @@ public class IOHandler {
     private Boolean linkMapIsNotSet = true;
 
     private String scenarioFileFullName;
-    private int cutLength = -1;
+    private static int cutLength = -1;
 
 
     public IOHandler(){}
@@ -90,7 +90,7 @@ public class IOHandler {
     }
 
     public static String getRoutingTablePath() {
-        return mapsDirectory + "RoutingTable";
+        return mapsDirectory + "RoutingTable"+getCutLength();
     }
 
     public String getScenarioFileName() {
@@ -117,14 +117,14 @@ public class IOHandler {
         return mapsDirectory + mapFileName + getCutLength() + ".dot";
     }
 
-    private String getCutLength() {
+    private static String getCutLength() {
         if(cutLength == -1){
             return "";
         } else return String.valueOf(cutLength);
     }
 
     public void setCutLength(int cutLength) {
-        this.cutLength = cutLength;
+        cutLength = cutLength;
     }
 
     String getLinksFilePath() {

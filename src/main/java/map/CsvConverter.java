@@ -28,9 +28,7 @@ public class CsvConverter {
     }
 
     public static void convertLinkMap(IOHandler ioHandler) throws IOException {
-//        System.out.println("linkmap: " + ioHandler.getLinkMapPath());
         Map<String, Link> linkMap = ioHandler.getLinkMap();
-        int count = 0;
 
         TableGraph<MultiAttributeData> graph = new TableGraph<MultiAttributeData>();
         for(String id : linkMap.keySet()) {
@@ -43,9 +41,7 @@ public class CsvConverter {
             graph.addConnection(new Point(link.getStartX(),link.getStartY()),
                     new Point(link.getEndX(),link.getEndY()),
                     data.build());
-            count++;
         }
-//        System.out.println("Count: " + count);
 
 //            // Export file
         DotWriter.export(graph, ioHandler);
@@ -83,37 +79,6 @@ public class CsvConverter {
     }
 
 
-//    public void convertLinkFile(String linkFile) {
-//        try {
-//            Scanner scanner = new Scanner(new File(linkFile));
-//            scanner.nextLine();
-//            int count = 0;
-//
-//            TableGraph<MultiAttributeData> graph = new TableGraph<MultiAttributeData>();
-//            while (scanner.hasNextLine()) {
-//                String line = scanner.nextLine();
-//                String[] splitLine = line.split(",");
-//                MultiAttributeData.Builder data = MultiAttributeData.builder().setLength(Double.valueOf(splitLine[5]));
-//                graph.addConnection(new Point(Double.valueOf(splitLine[9]), -1 * Double.valueOf(splitLine[10])),
-//                        new Point(Double.valueOf(splitLine[11]), -1 * Double.valueOf(splitLine[12])),
-//                        data.build());
-//                count++;
-//            }
-//            System.out.println("Count: " + count);
-//            scanner.close();
-//
-//
-////            // Export file
-//            if (output_dir.isPresent()) {
-//                DotWriter.export(graph, output_dir.get());
-//
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//
-//    }
+
 
 }

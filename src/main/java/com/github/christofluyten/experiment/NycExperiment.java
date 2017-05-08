@@ -79,7 +79,7 @@ public class NycExperiment {
 	private static final long deliveryDuration = 30 * 1000L;
 
 
-	private static final int cutLength = 100;                                                  //maximum length in meters of a edge in the graph (or "link" in the "map")
+	private static final int cutLength = 500;                                                  //maximum length in meters of a edge in the graph (or "link" in the "map")
 
 	private static final long scenarioDuration = (1 * 60 * 60 * 1000L) + 1L;
 
@@ -93,7 +93,7 @@ public class NycExperiment {
 	private static final long tickSize = 250L;
 	private static final int minNbOfBidders = 5;
 
-	private static final String routingTablePath= "src/main/resources/maps/RoutingTable"+cutLength;
+	private static final String routingTablePath= "src/main/resources/maps/RoutingTable";
 
 
 	/**

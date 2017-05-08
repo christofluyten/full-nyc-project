@@ -29,8 +29,8 @@ public class RoutingTableHandler {
     private int nbOfShortestPathCalc;
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-        String mapPath = "src/main/resources/maps/map100.dot";
-        String tablePath = "src/main/resources/maps/RoutingTable100";
+        String mapPath = "src/main/resources/maps/map500.dot";
+        String tablePath = "src/main/resources/maps/RoutingTable";
             RoutingTableHandler routingTableHandler = new RoutingTableHandler();
             routingTableHandler.createTable(mapPath,tablePath);
 

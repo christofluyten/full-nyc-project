@@ -123,7 +123,9 @@ abstract class ResultWriter implements ResultListener {
         .put(OutputFields.NUM_VEHICLES,stats.totalVehicles)
               .put(OutputFields.MOVED_VEHICLES, stats.movedVehicles)
         .put(OutputFields.NUM_ORDERS, stats.totalParcels)
-        .put(OutputFields.NUM_ACCEPTED_ORDERS, stats.acceptedParcels);
+        .put(OutputFields.NUM_ACCEPTED_ORDERS, stats.acceptedParcels)
+        .put(OutputFields.NUM_DELIVERED_ORDERS, stats.totalDeliveries);
+
 
       if (ei.getAuctionStats().isPresent()) {
         final NycExperiment.AuctionStats aStats = ei.getAuctionStats().get();
@@ -321,11 +323,17 @@ abstract class ResultWriter implements ResultListener {
 
     NUM_UNSUC_REAUCTIONS,
 
-      NUM_FAILED_REAUCTIONS,
+    NUM_FAILED_REAUCTIONS,
 
-      PICKUP_TARDINESS,
+    PICKUP_TARDINESS,
 
-      DELIVERY_TARDINESS, TRAVEL_DISTANCE, MOVED_VEHICLES;
+    DELIVERY_TARDINESS,
+
+    TRAVEL_DISTANCE,
+
+    MOVED_VEHICLES,
+
+    NUM_DELIVERED_ORDERS;
 
     @Override
     public String toString() {

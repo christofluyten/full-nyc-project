@@ -73,7 +73,9 @@ public class RoutingTableHandler {
         int count = 0;
         for (Point fromPoint : points) {
             count++;
-            System.out.println("outerloop " + count);
+            if(count % 100 == 0){
+                System.out.println("outerloop " + count);
+            }
             nbOfShortestPathCalc = 0;
 
             table.put(fromPoint, fromPoint, new Route(fromPoint, 0d));
@@ -85,7 +87,7 @@ public class RoutingTableHandler {
                     nbOfShortestPathCalc++;
                 }
             }
-            System.out.println("nbOfShortestPathCalc " + (nfOfNodes - nbOfShortestPathCalc) + " table size " + table.size());
+//            System.out.println("nbOfShortestPathCalc " + (nfOfNodes - nbOfShortestPathCalc) + " table size " + table.size());
 
         }
         IO.writeFile(new RoutingTable(table), pathToRoutingTable);

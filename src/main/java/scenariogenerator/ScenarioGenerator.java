@@ -164,6 +164,9 @@ public class ScenarioGenerator {
                     )
                             .withAllowVehicleDiversion(true))
                     .scenarioLength(this.builder.scenarioDuration);
+//                            .scenarioLength(20*1000L);
+
+
         addPassengers(builder);
 //        addTaxis(builder);
 //            addJFK(builder);
@@ -189,6 +192,7 @@ public class ScenarioGenerator {
                 .setStopCondition(StopConditions.and(
                         StatsStopConditions.vehiclesDone(),
                         StatsStopConditions.timeOutEvent()))
+                .addEvent(TimeOutEvent.create(this.builder.scenarioDuration))
                 .addEvent(AddDepotEvent.create(-1, new Point(-73.9778627, -40.7888872)))
         ;
     }
@@ -214,7 +218,6 @@ public class ScenarioGenerator {
 
 
             totalCount++;
-//            if (debug && addedCount >= 20) {
 ////            if (addedCount >= 20) {
 //                break;
 //            }
@@ -257,7 +260,7 @@ public class ScenarioGenerator {
                         AddParcelEvent.create(parcelBuilder.buildDTO()));
             }
             totalCount++;
-//            if (debug && addedCount >= 12) {
+//            if (debug && addedCount >= 3) {
 //                break;
 //            }
 

@@ -108,12 +108,14 @@ public final class StatsTracker extends AbstractModelVoid implements
   public StatisticsDTO getStatistics() {
     final int vehicleBack = theListener.lastArrivalTimeAtDepot.size();
     long overTime = 0;
+
     if (theListener.simFinish) {
       for (final Long time : theListener.lastArrivalTimeAtDepot.values()) {
         if (time - theListener.scenarioEndTime > 0) {
           overTime += time - theListener.scenarioEndTime;
         }
       }
+
     }
 
     long compTime = theListener.computationTime;
@@ -156,6 +158,7 @@ public final class StatsTracker extends AbstractModelVoid implements
     protected double totalDistance;
     protected long totalTime;
     protected final Map<MovingRoadUser, Long> lastArrivalTimeAtDepot;
+
 
     protected int totalPickups;
     protected int totalDeliveries;
@@ -270,20 +273,7 @@ public final class StatsTracker extends AbstractModelVoid implements
             StatisticsEventType.DELIVERY_TARDINESS, this, p, v, tardiness,
             pme.time));
         }
-//        if(Math.abs(dTardiness - parcelTardiness.get(p))>10){
-//          long startTime = parcelPickupTime.get(p);
-//          long realTime = pme.time-startTime;
-//          System.out.println("realTime =           "+ realTime);
-//          long tableTime = (long) routingTable.getRoadPathTo(p.getPickupLocation(),p.getDeliveryLocation()).getTravelTime();
-//          System.out.println("tableTime =          "+ tableTime);
-//          System.out.println("diff =               "+ (realTime-tableTime));
-//          System.out.println("OrderAnnounceTime:   "+ p.getOrderAnnounceTime());
-//          System.out.println("Start pickup:          " + startTime);
-//          System.out.println("PickupTimeWindow:    "+p.getPickupTimeWindow());
-//          System.out.println("DeliveryTimeWindow:  " +p.getDeliveryTimeWindow());
-//          System.out.println("Start delivery:      " +pme.time);
-//          System.out.println();
-//        }
+
 
       } else if (e.getEventType() == PDPModelEventType.END_DELIVERY) {
         totalDeliveries++;

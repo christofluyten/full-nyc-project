@@ -275,7 +275,7 @@ public class NycExperiment {
 			long reauctCooldownPeriodMs, boolean computationsLogging) {
 
 		MASConfiguration.Builder b = MASConfiguration.pdptwBuilder()
-				.setName("MAS_" + attribute)
+				.setName("MAS_" + attribute+"_aFilter="+amountFilter+"_bFilter="+minNbOfBidders)
 				.addEventHandler(TimeOutEvent.class, TimeOutEvent.ignoreHandler())
 				.addEventHandler(AddDepotEvent.class, AddDepotEvent.defaultHandler())
 				.addEventHandler(AddParcelEvent.class, AddParcelEvent.defaultHandler())

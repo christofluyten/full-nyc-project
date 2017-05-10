@@ -165,7 +165,8 @@ public class ScenarioGenerator {
                             .withAllowVehicleDiversion(true))
                     .scenarioLength(this.builder.scenarioDuration);
 //                            .scenarioLength(20*1000L);
-        addPassengersAtInterval(builder);
+//        addPassengersAtInterval(builder);
+        addPassengersWithAnounceTime(builder);
 //        addPassengers(builder);
 //        addTaxis(builder);
 //            addJFK(builder);
@@ -311,6 +312,55 @@ public class ScenarioGenerator {
         System.out.println(addedCount + " passengers added of the " + totalCount);
     }
 
+
+    private void addPassengersWithAnounceTime(Scenario.Builder builder) throws IOException, ClassNotFoundException {
+        if (!(getIoHandler().fileExists(ioHandler.getPositionedPassengersPath()))) {
+            PassengerHandler pfm = new PassengerHandler(ioHandler);
+            pfm.extractAndPositionPassengers();
+        }
+        List<SimulationObject> passengers = getIoHandler().readPositionedObjects(ioHandler.getPositionedPassengersPath());
+        int totalCount = 0;
+        int addedCount = 0;
+        long anounceTime = 3*60*1000L;
+        RoutingTable routingTable = RoutingTableSupplier.get(this.builder.routingTablePath);
+        for (SimulationObject object : passengers) {
+            if (totalCount % this.builder.amountFilter == 0) {
+                addedCount++;
+                Passenger passenger = (Passenger) object;
+                long pickupStartTime = passenger.getStartTime(this.builder.taxiDataStartTime);
+                long pickupTimeWindow = passenger.getStartTimeWindow(this.builder.taxiDataStartTime);
+                long deliveryStartTime = getDeliveryStartTimeWithAnounceTime(passenger, routingTable, anounceTime);
+                Parcel.Builder parcelBuilder = Parcel.builder(passenger.getStartPoint(), passenger.getEndPoint())
+                        .orderAnnounceTime(pickupStartTime)
+                        .pickupTimeWindow(TimeWindow.create(anounceTime+pickupStartTime, anounceTime+pickupStartTime + pickupTimeWindow))
+                        .pickupDuration(this.builder.pickupDuration)
+                        .deliveryDuration(this.builder.deliveryDuration);
+                if (this.builder.ridesharing) {
+                    parcelBuilder = parcelBuilder
+                            .deliveryTimeWindow(TimeWindow.create(anounceTime+pickupStartTime, deliveryStartTime + (pickupTimeWindow * 2)))
+                            .neededCapacity(passenger.getAmount());
+                } else {
+                    parcelBuilder = parcelBuilder
+                            .deliveryTimeWindow(TimeWindow.create(anounceTime+pickupStartTime, deliveryStartTime + (pickupTimeWindow)))
+                            .neededCapacity(4);
+                }
+                builder.addEvent(
+                        AddParcelEvent.create(parcelBuilder.buildDTO()));
+            }
+            totalCount++;
+//            if (debug && addedCount >= 3) {
+//                break;
+//            }
+
+        }
+        System.out.println(addedCount + " passengers added of the " + totalCount);
+    }
+
+    private long getDeliveryStartTimeWithAnounceTime(Passenger passenger, RoutingTable routingTable, long anounceTime) {
+        long startTime = passenger.getStartTime(this.builder.taxiDataStartTime);
+        long travelTime = (long) routingTable.getRoute(passenger.getStartPoint(), passenger.getEndPoint()).getTravelTime();
+        return anounceTime+startTime + travelTime + this.builder.pickupDuration;
+    }
 
 
     private long getDeliveryStartTime(Passenger passenger, RoutingTable routingTable) {

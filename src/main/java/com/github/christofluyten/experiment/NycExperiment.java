@@ -65,7 +65,7 @@ public class NycExperiment {
 	private static boolean debug = true;
 	private static boolean gui = true;
 	private final static int amountFilter = 10;
-	private static final int minNbOfBidders = -1;
+	private static final int minNbOfBidders = 5;
 
 
 

@@ -61,7 +61,7 @@ public class NycExperiment {
 	private final static boolean enableReauctions = true;
 	private final static boolean computationsLogging = false;
 	private final static boolean ridesharing = false;
-	private static String attribute = "noRidesharing_AT3";
+	private static String attribute = "noRidesharing_Interval";
 	private static boolean debug = true;
 	private static boolean gui = true;
 	private final static int amountFilter = 10;

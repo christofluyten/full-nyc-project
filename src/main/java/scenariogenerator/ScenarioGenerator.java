@@ -166,8 +166,8 @@ public class ScenarioGenerator {
                     .scenarioLength(this.builder.scenarioDuration);
 //                            .scenarioLength(20*1000L);
 //        addPassengersAtInterval(builder);
-//        addPassengersWithAnounceTime(builder);
-        addPassengers(builder);
+        addPassengersWithAnounceTime(builder);
+//        addPassengers(builder);
 //        addTaxis(builder);
 //            addJFK(builder);
 //            addManhattan(builder);

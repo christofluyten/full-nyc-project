@@ -6,7 +6,6 @@ import com.github.rinde.rinsim.core.model.pdp.Parcel;
 import com.github.rinde.rinsim.core.model.pdp.TimeWindowPolicy;
 import com.github.rinde.rinsim.core.model.pdp.VehicleDTO;
 import com.github.rinde.rinsim.core.model.road.CachedNycGraphRoadModelImpl;
-import com.github.rinde.rinsim.core.model.road.RoadModelBuilders;
 import com.github.rinde.rinsim.core.model.time.RealtimeClockController;
 import com.github.rinde.rinsim.core.model.time.TimeModel;
 import com.github.rinde.rinsim.geom.ListenableGraph;
@@ -165,8 +164,8 @@ public class ScenarioGenerator {
                             .withAllowVehicleDiversion(true))
                     .scenarioLength(this.builder.scenarioDuration);
 //                            .scenarioLength(20*1000L);
-        addPassengersAtInterval(builder);
-//        addPassengersWithAnounceTime(builder);
+//        addPassengersAtInterval(builder);
+        addPassengersWithDoubleTimewindow(builder);
 //        addPassengers(builder);
 //        addTaxis(builder);
 //            addJFK(builder);
@@ -313,7 +312,7 @@ public class ScenarioGenerator {
     }
 
 
-    private void addPassengersWithAnounceTime(Scenario.Builder builder) throws IOException, ClassNotFoundException {
+    private void addPassengersWithDoubleTimewindow(Scenario.Builder builder) throws IOException, ClassNotFoundException {
         if (!(getIoHandler().fileExists(ioHandler.getPositionedPassengersPath()))) {
             PassengerHandler pfm = new PassengerHandler(ioHandler);
             pfm.extractAndPositionPassengers();
@@ -321,27 +320,26 @@ public class ScenarioGenerator {
         List<SimulationObject> passengers = getIoHandler().readPositionedObjects(ioHandler.getPositionedPassengersPath());
         int totalCount = 0;
         int addedCount = 0;
-        long anounceTime = 3*60*1000L;
         RoutingTable routingTable = RoutingTableSupplier.get(this.builder.routingTablePath);
         for (SimulationObject object : passengers) {
             if (totalCount % this.builder.amountFilter == 0) {
                 addedCount++;
                 Passenger passenger = (Passenger) object;
                 long pickupStartTime = passenger.getStartTime(this.builder.taxiDataStartTime);
-                long pickupTimeWindow = passenger.getStartTimeWindow(this.builder.taxiDataStartTime);
-                long deliveryStartTime = getDeliveryStartTimeWithAnounceTime(passenger, routingTable, anounceTime);
+                long pickupTimeWindow = 2*passenger.getStartTimeWindow(this.builder.taxiDataStartTime);
+                long deliveryStartTime = getDeliveryStartTime(passenger, routingTable);
                 Parcel.Builder parcelBuilder = Parcel.builder(passenger.getStartPoint(), passenger.getEndPoint())
                         .orderAnnounceTime(pickupStartTime)
-                        .pickupTimeWindow(TimeWindow.create(anounceTime+pickupStartTime, anounceTime+pickupStartTime + pickupTimeWindow))
+                        .pickupTimeWindow(TimeWindow.create(pickupStartTime, pickupStartTime + pickupTimeWindow))
                         .pickupDuration(this.builder.pickupDuration)
                         .deliveryDuration(this.builder.deliveryDuration);
                 if (this.builder.ridesharing) {
                     parcelBuilder = parcelBuilder
-                            .deliveryTimeWindow(TimeWindow.create(anounceTime+pickupStartTime, deliveryStartTime + (pickupTimeWindow * 2)))
+                            .deliveryTimeWindow(TimeWindow.create(pickupStartTime, deliveryStartTime + (pickupTimeWindow * 2)))
                             .neededCapacity(passenger.getAmount());
                 } else {
                     parcelBuilder = parcelBuilder
-                            .deliveryTimeWindow(TimeWindow.create(anounceTime+pickupStartTime, deliveryStartTime + (pickupTimeWindow)))
+                            .deliveryTimeWindow(TimeWindow.create(pickupStartTime, deliveryStartTime + (pickupTimeWindow)))
                             .neededCapacity(4);
                 }
                 builder.addEvent(

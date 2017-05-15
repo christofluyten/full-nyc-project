@@ -61,10 +61,10 @@ public class NycExperiment {
 	private final static boolean enableReauctions = true;
 	private final static boolean computationsLogging = false;
 	private final static boolean ridesharing = false;
-	private static String attribute = "noRidesharing_interval";
+	private static String attribute = "noRidesharing_TW=10";
 	private static boolean debug = true;
 	private static boolean gui = true;
-	private final static int amountFilter = 5;
+	private final static int amountFilter = 20;
 	private static final int minNbOfBidders = 5;
 
 

@@ -183,7 +183,7 @@ public final class DefaultPDPModel extends PDPModel {
           + "pickup");
       final double newSize = containerContentsSize.get(vehicle)
         + parcel.getNeededCapacity();
-      if(newSize <= containerCapacities.get(vehicle)){
+      if(newSize > containerCapacities.get(vehicle)){
         System.out.println("vehicle.getPDPModel().containerContains(parcel) "+vehicle.getPDPModel().containerContains(vehicle,parcel));
         System.out.println("content "+vehicle.getPDPModel().getContents(vehicle).toString());
       }

@@ -35,7 +35,5 @@ NewYorkCityTaxiChallenge.iml
 nohup.out
 .idea/
 
-files/results
-
 
 src/main/resources/scenarios/

@@ -185,7 +185,17 @@ public final class DefaultPDPModel extends PDPModel {
         + parcel.getNeededCapacity();
       if(newSize > containerCapacities.get(vehicle)){
         System.out.println("vehicle.getPDPModel().containerContains(parcel) "+vehicle.getPDPModel().containerContains(vehicle,parcel));
-        System.out.println("content "+vehicle.getPDPModel().getContents(vehicle).toString());
+        System.out.println("content "+parcel.toString()+" "+vehicle.getPDPModel().getContents(vehicle).toString());
+        ImmutableSet<Parcel> parcelset = vehicle.getPDPModel().getContents(vehicle);
+        System.out.println("loc " +parcel.toString()+" "+parcel.getPickupLocation().toString());
+        System.out.println("loc " +vehicle.toString()+" "+vehicle.getCurrentLocation());
+        for(Parcel parcel1:parcelset){
+          System.out.println(parcel1.toString());
+          System.out.println("parcelstate "+vehicle.getPDPModel().getParcelState(parcel1));
+          System.out.println("vehiclestate "+vehicle.getPDPModel().getVehicleState(vehicle));
+          System.out.println("loc " +parcel1.getDeliveryLocation().toString());
+          System.out.println();
+        }
       }
       /* 6 */checkArgument(
         newSize <= containerCapacities.get(vehicle),

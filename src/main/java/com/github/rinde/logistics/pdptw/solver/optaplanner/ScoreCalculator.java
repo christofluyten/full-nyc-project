@@ -42,7 +42,7 @@ public class ScoreCalculator
 
   static final long MISSING_VISIT_PENALTY = 10L;
   static final long PARCEL_ORDER_PENALTY = 1L;
-  static final long OVERLOAD_PENALTY = 1L;
+  static final long OVERLOAD_PENALTY = 100L;
 
   long hardScore;
   long softScore;

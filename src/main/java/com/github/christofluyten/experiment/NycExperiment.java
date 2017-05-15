@@ -64,7 +64,7 @@ public class NycExperiment {
 	private static String attribute = "noRidesharing";
 	private static boolean debug = true;
 	private static boolean gui = false;
-	private final static int amountFilter = 10;
+	private final static int amountFilter = 5;
 	private static final int minNbOfBidders = 5;
 	private static int repetitions = 3;
 

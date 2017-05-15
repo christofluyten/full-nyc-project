@@ -1,0 +1,2 @@
+problem-class,instance,config,random-seed,repetition,rt-tick-infos,avg-interarrival-time,rt-count,st-count
+DEFAULT,,MAS_noRidesharing_interval_aFilter=5_bFilter=5,2039311718359419500,0,14427,249999993,14428,8198

@@ -64,8 +64,8 @@ public class NycExperiment {
 	private static String attribute = "noRidesharing";
 	private static boolean debug = true;
 	private static boolean gui = true;
-	private final static int amountFilter = 1;
-	private static final int minNbOfBidders = -1;
+	private final static int amountFilter = 20;
+	private static final int minNbOfBidders = 5;
 
 
 
@@ -182,7 +182,7 @@ public class NycExperiment {
 				.withRandomSeed(123)
 				.withThreads((int) Math
 						.floor((Runtime.getRuntime().availableProcessors() - 1) / 2d))
-				.repeat(3)
+				.repeat(10)
 					.withWarmup(30000);
 		} else {
 					if(gui){
@@ -323,7 +323,7 @@ public class NycExperiment {
 			b = b.addModel(RtSolverModel.builder());
 		} else {
 			b = b.addModel(RtSolverModel.builder()
-					.withThreadPoolSize(3)
+					.withThreadPoolSize(1)
 					.withThreadGrouping(true)
 			);
 		}

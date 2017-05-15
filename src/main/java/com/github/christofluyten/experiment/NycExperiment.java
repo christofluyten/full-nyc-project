@@ -64,7 +64,7 @@ public class NycExperiment {
 	private static String attribute = "noRidesharing_TW=10";
 	private static boolean debug = true;
 	private static boolean gui = true;
-	private final static int amountFilter = 20;
+	private final static int amountFilter = 10;
 	private static final int minNbOfBidders = 5;
 
 
@@ -203,7 +203,7 @@ public class NycExperiment {
 										)
 //										.with(AuctionPanel.builder())
 //										.with(RoutePanel.builder())
-//										.with(TimeLinePanel.builder())
+										.with(TimeLinePanel.builder())
 //							.with(RtSolverPanel.builder())
 										.withResolution(12800, 10240)
 										.withAutoPlay()
@@ -233,7 +233,7 @@ public class NycExperiment {
 
 		final List<MASConfiguration> configs = new ArrayList<>();
 		if (debug){
-			if(!debug) {
+			if(debug) {
 				configs.add(createMAS(opFfdFactory, objFunc, rpMs, bMs,
 						maxAuctionDurationSoft, enableReauctions, reactCooldownPeriodMs, computationsLogging));
 				System.out.println("MAS");

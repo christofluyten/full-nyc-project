@@ -75,6 +75,7 @@ public class ScenarioGenerator {
 
     private IOHandler ioHandler;
     private String scenarioName;
+    private int offset;
 
     public ScenarioGenerator(Builder builder) {
         this.builder = builder;
@@ -133,8 +134,9 @@ public class ScenarioGenerator {
         }
     }
 
-    public Scenario generateTaxiScenario(boolean debug) throws Exception {
+    public Scenario generateTaxiScenario(boolean debug,int offset) throws Exception {
         this.debug = debug;
+        this.offset =offset;
         Scenario.Builder builder = Scenario.builder();
         addGeneralProperties(builder);
         addTaxis(builder);
@@ -235,7 +237,7 @@ public class ScenarioGenerator {
         int addedCount = 0;
         RoutingTable routingTable = RoutingTableSupplier.get(this.builder.routingTablePath);
         for (SimulationObject object : passengers) {
-            if (totalCount % this.builder.amountFilter == 0) {
+            if (totalCount+offset % this.builder.amountFilter == 0) {
                 addedCount++;
                 Passenger passenger = (Passenger) object;
                 long pickupStartTime = passenger.getStartTime(this.builder.taxiDataStartTime);
@@ -279,7 +281,7 @@ public class ScenarioGenerator {
         int addedCount = 0;
         RoutingTable routingTable = RoutingTableSupplier.get(this.builder.routingTablePath);
         for (SimulationObject object : passengers) {
-            if (totalCount % this.builder.amountFilter == 0){
+            if (totalCount+offset % this.builder.amountFilter == 0){
                 addedCount++;
                 Passenger passenger = (Passenger) object;
                 long pickupStartTime = interval*totalCount;
@@ -322,7 +324,7 @@ public class ScenarioGenerator {
         int addedCount = 0;
         RoutingTable routingTable = RoutingTableSupplier.get(this.builder.routingTablePath);
         for (SimulationObject object : passengers) {
-            if (totalCount % this.builder.amountFilter == 0) {
+            if (totalCount+offset % this.builder.amountFilter == 0) {
                 addedCount++;
                 Passenger passenger = (Passenger) object;
                 long pickupStartTime = passenger.getStartTime(this.builder.taxiDataStartTime);
@@ -354,11 +356,7 @@ public class ScenarioGenerator {
         System.out.println(addedCount + " passengers added of the " + totalCount);
     }
 
-    private long getDeliveryStartTimeWithAnounceTime(Passenger passenger, RoutingTable routingTable, long anounceTime) {
-        long startTime = passenger.getStartTime(this.builder.taxiDataStartTime);
-        long travelTime = (long) routingTable.getRoute(passenger.getStartPoint(), passenger.getEndPoint()).getTravelTime();
-        return anounceTime+startTime + travelTime + this.builder.pickupDuration;
-    }
+
 
 
     private long getDeliveryStartTime(Passenger passenger, RoutingTable routingTable) {

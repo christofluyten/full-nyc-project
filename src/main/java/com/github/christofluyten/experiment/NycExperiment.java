@@ -66,7 +66,7 @@ public class NycExperiment {
 	private static boolean gui = false;
 	private final static int amountFilter = 5;
 	private static final int minNbOfBidders = 5;
-	private static int repetitions = 10;
+	private static int repetitions = 3;
 
 
 
@@ -154,10 +154,13 @@ public class NycExperiment {
 							.build();
 
 
-		Scenario scenario = sg.generateTaxiScenario(debug);
+		Scenario scenario = sg.generateTaxiScenario(debug,0);
 
 		List<Scenario> scenarios = new ArrayList<>();
-		scenarios.add(scenario);
+		scenarios.add(sg.generateTaxiScenario(debug,0));
+		scenarios.add(sg.generateTaxiScenario(debug,1));
+		scenarios.add(sg.generateTaxiScenario(debug,2));
+
 		System.out.println("measureDynamism " + Metrics.measureDynamism(scenario));
 		System.out.println("measureUrgency " + Metrics.measureUrgency(scenario));
 		System.out.println("duration " + scenario.getTimeWindow().end());

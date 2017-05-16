@@ -149,13 +149,22 @@ public class Truck
     }
 
     boolean checkRoute(){
-        if(getRoutePlanner().currentRoute().isPresent()){
+        boolean result = true;
+        if(getRoutePlanner().currentRoute().isPresent()&&getRoutePlanner().currentRoute().get().size()>1){
             List<Parcel> parcelList = getRoutePlanner().currentRoute().get();
-            System.out.println("parcelList "+parcelList);
-            for(Parcel parcel:parcelList){
+            int start = 1;
+            if(parcelList.get(0)==parcelList.get(1)){
+                start = 2;
+            }
+            for(int i = start; i > parcelList.size(); i=+2){
+                if(parcelList.get(i)!= parcelList.get(i+1)){
+                    System.out.println("parcelList "+parcelList);
+                    result=false;
+                    break;
+                }
             }
         }
-        return true;
+        return result;
     }
 
     void checkRoutePlanner() {

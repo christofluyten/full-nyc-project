@@ -61,10 +61,10 @@ public class NycExperiment {
 	private final static boolean enableReauctions = true;
 	private final static boolean computationsLogging = false;
 	private final static boolean ridesharing = false;
-	private static String attribute = "noRidesharing_TW75";
+	private static String attribute = "noRidesharing";
 	private static boolean debug = true;
 	private static boolean gui = true;
-	private final static int amountFilter = 10;
+	private final static int amountFilter = 5;
 	private static final int minNbOfBidders = 5;
 	private static int repetitions = 3;
 
@@ -185,9 +185,9 @@ public class NycExperiment {
 //					.computeDistributed()
 				 .computeLocal()
 				.withRandomSeed(123)
-//				.withThreads((int) Math
-//						.floor((Runtime.getRuntime().availableProcessors() - 1) / 2d))
-					.withThreads(1)
+				.withThreads((int) Math
+						.floor((Runtime.getRuntime().availableProcessors() - 1) / 2d))
+//					.withThreads(1)
 					.repeat(repetitions)
 					.withWarmup(30000);
 		} else {
@@ -329,7 +329,7 @@ public class NycExperiment {
 			b = b.addModel(RtSolverModel.builder());
 		} else {
 			b = b.addModel(RtSolverModel.builder()
-					.withThreadPoolSize(1)
+					.withThreadPoolSize(3)
 					.withThreadGrouping(true)
 			);
 		}

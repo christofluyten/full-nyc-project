@@ -328,7 +328,7 @@ public class ScenarioGenerator {
                 addedCount++;
                 Passenger passenger = (Passenger) object;
                 long pickupStartTime = passenger.getStartTime(this.builder.taxiDataStartTime);
-                long pickupTimeWindow = (long) (1.5*passenger.getStartTimeWindow(this.builder.taxiDataStartTime));
+                long pickupTimeWindow = (long) ((3*passenger.getStartTimeWindow(this.builder.taxiDataStartTime))/5);
                 long deliveryStartTime = getDeliveryStartTime(passenger, routingTable);
                 Parcel.Builder parcelBuilder = Parcel.builder(passenger.getStartPoint(), passenger.getEndPoint())
                         .orderAnnounceTime(pickupStartTime)

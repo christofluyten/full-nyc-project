@@ -185,9 +185,10 @@ public class NycExperiment {
 //					.computeDistributed()
 				 .computeLocal()
 				.withRandomSeed(123)
-				.withThreads((int) Math
-						.floor((Runtime.getRuntime().availableProcessors() - 1) / 2d))
-				.repeat(repetitions)
+//				.withThreads((int) Math
+//						.floor((Runtime.getRuntime().availableProcessors() - 1) / 2d))
+					.withThreads(1)
+					.repeat(repetitions)
 					.withWarmup(30000);
 		} else {
 					if(gui){

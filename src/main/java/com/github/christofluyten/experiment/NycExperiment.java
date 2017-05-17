@@ -52,7 +52,7 @@ public class NycExperiment {
 	private final static long rpMs = 100L; //100
 	private final static long bMs = 20L; //20
 	private final static long maxAuctionDurationSoft = 10 * 1000L;  //10000L;
-	private final static long maxAuctionDurationHard = 30 * 60 * 1000L;
+	private final static long maxAuctionDurationHard = 45 * 60 * 1000L;
 	private final static long reactCooldownPeriodMs = 60*1000L;
 	private final static BidFunction bf = BidFunctions.BALANCED_HIGH;
 	private final static String masSolverName =
@@ -61,7 +61,7 @@ public class NycExperiment {
 	private final static boolean enableReauctions = true;
 	private final static boolean computationsLogging = false;
 	private final static boolean ridesharing = false;
-	private static String attribute = "noRidesharing_DTW";
+	private static String attribute = "noRidesharing_TW75";
 	private static boolean debug = true;
 	private static boolean gui = true;
 	private final static int amountFilter = 5;

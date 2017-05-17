@@ -2,3 +2,4 @@ problem-class,instance,config,random-seed,repetition,rt-tick-infos,avg-interarri
 DEFAULT,,MAS_noRidesharing_TW30_aFilter=5_bFilter=5,5519470499984739720,0,13887,250000256,13969,11023
 DEFAULT,,MAS_noRidesharing_TW30_aFilter=5_bFilter=5,-570648509535936272,0,13937,250000263,14015,9054
 DEFAULT,,MAS_noRidesharing_TW30_aFilter=5_bFilter=5,5519470499984739720,0,13930,250000244,14005,9427
+DEFAULT,,MAS_noRidesharing_TW30_aFilter=5_bFilter=5,-570648509535936272,0,13949,250000360,14019,9307

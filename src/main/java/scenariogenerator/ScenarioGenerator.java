@@ -166,8 +166,8 @@ public class ScenarioGenerator {
                             .withAllowVehicleDiversion(true))
                     .scenarioLength(this.builder.scenarioDuration);
 //                            .scenarioLength(20*1000L);
-        addPassengersAtInterval(builder);
-//        addPassengersWithDoubleTimewindow(builder);
+//        addPassengersAtInterval(builder);
+        addPassengersWithDoubleTimewindow(builder);
 //        addPassengers(builder);
 //        addTaxis(builder);
 //            addJFK(builder);

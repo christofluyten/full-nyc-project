@@ -197,12 +197,12 @@ public final class DefaultPDPModel extends PDPModel {
           System.out.println();
         }
       }
-      /* 6 */checkArgument(
-        newSize <= containerCapacities.get(vehicle),
-        "parcel does not fit in vehicle. Parcel size: %s, current contents "
-          + "size: %s, capacity: %s.",
-        parcel.getNeededCapacity(), containerContentsSize.get(vehicle),
-        containerCapacities.get(vehicle));
+//      /* 6 */checkArgument(
+//        newSize <= containerCapacities.get(vehicle),
+//        "parcel does not fit in vehicle. Parcel size: %s, current contents "
+//          + "size: %s, capacity: %s.",
+//        parcel.getNeededCapacity(), containerContentsSize.get(vehicle),
+//        containerCapacities.get(vehicle));
 
       checkArgument(
         timeWindowPolicy.canPickup(parcel.getPickupTimeWindow(),

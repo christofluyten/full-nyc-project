@@ -255,7 +255,7 @@ public class NycExperiment {
 								.withName("Central_" + attribute)
 								.withSolverHeuristic(heuristic)
 								.withUnimprovedMsLimit(centralUnimprovedMs),
-						"Central_" + attribute+"_aFilter="+amountFilter+"_bFilter="+minNbOfBidders));
+						"Central_" + attribute+"_aFilter="+amountFilter+"_TW="+timewindow));
 				System.out.println("Central");
 
 			}
@@ -271,7 +271,7 @@ public class NycExperiment {
 //								.withName("Central_" + attribute)
 //								.withSolverHeuristic(heuristic)
 //								.withUnimprovedMsLimit(centralUnimprovedMs),
-//						"Central_" + attribute+"_aFilter="+amountFilter+"_bFilter="+minNbOfBidders));
+//						"Central_" + attribute+"_aFilter="+amountFilter+"_TW="+timewindow));
 		}
 		System.out.println("created the mainConfigs");
 		return configs;
@@ -283,7 +283,7 @@ public class NycExperiment {
 			long reauctCooldownPeriodMs, boolean computationsLogging) {
 
 		MASConfiguration.Builder b = MASConfiguration.pdptwBuilder()
-				.setName("MAS_" + attribute+"_aFilter="+amountFilter+"_bFilter="+minNbOfBidders)
+				.setName("MAS_" + attribute+"_aFilter="+amountFilter+"_TW="+timewindow)
 				.addEventHandler(TimeOutEvent.class, TimeOutEvent.ignoreHandler())
 				.addEventHandler(AddDepotEvent.class, AddDepotEvent.defaultHandler())
 				.addEventHandler(AddParcelEvent.class, AddParcelEvent.defaultHandler())

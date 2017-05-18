@@ -64,7 +64,7 @@ public class NycExperiment {
 	private static String attribute = "noRidesharing";
 	private static boolean debug = true;
 	private static boolean gui = true;
-	private final static int amountFilter = 5;
+	private final static int amountFilter = 20;
 	private static final int minNbOfBidders = 5;
 	private static int repetitions = 3;
 
@@ -263,13 +263,13 @@ public class NycExperiment {
 				final String solverKey =
 						"Step-counting-hill-climbing-with-entity-tabu-and-strategic-oscillation";
 				final long centralUnimprovedMs = 10000L;
-				configs.add(createCentral(
-						opFfdFactory.withSolverXmlResource(
-								"com/github/rinde/jaamas17/jaamas-solver.xml")
-								.withName("Central_" + attribute)
-								.withSolverHeuristic(heuristic)
-								.withUnimprovedMsLimit(centralUnimprovedMs),
-						"Central_" + attribute+"_aFilter="+amountFilter+"_bFilter="+minNbOfBidders));
+//				configs.add(createCentral(
+//						opFfdFactory.withSolverXmlResource(
+//								"com/github/rinde/jaamas17/jaamas-solver.xml")
+//								.withName("Central_" + attribute)
+//								.withSolverHeuristic(heuristic)
+//								.withUnimprovedMsLimit(centralUnimprovedMs),
+//						"Central_" + attribute+"_aFilter="+amountFilter+"_bFilter="+minNbOfBidders));
 		}
 		System.out.println("created the mainConfigs");
 		return configs;
@@ -329,7 +329,7 @@ public class NycExperiment {
 			b = b.addModel(RtSolverModel.builder());
 		} else {
 			b = b.addModel(RtSolverModel.builder()
-					.withThreadPoolSize(1)
+					.withThreadPoolSize(3)
 					.withThreadGrouping(true)
 			);
 		}

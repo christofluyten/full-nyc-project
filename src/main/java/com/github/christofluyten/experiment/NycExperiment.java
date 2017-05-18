@@ -329,7 +329,7 @@ public class NycExperiment {
 			b = b.addModel(RtSolverModel.builder());
 		} else {
 			b = b.addModel(RtSolverModel.builder()
-					.withThreadPoolSize(3)
+					.withThreadPoolSize(1)
 					.withThreadGrouping(true)
 			);
 		}

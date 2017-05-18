@@ -1,2 +1,3 @@
 cost,travel_time,tardiness,over_time,is_valid,scenario_id,random_seed,repetition,comp_time,num_vehicles,num_orders,num_accepted_orders,num_reauctions,num_unsuc_reauctions,num_failed_reauctions,pickup_tardiness,delivery_tardiness,travel_distance,moved_vehicles,num_delivered_orders
 15181.744883333333,14958.540516666666,203.73771666666667,19.46665,true,DEFAULT-,5519470499984739720,0,1106640,626,1120,1120,22,4,0,101.8688,101.86891666666666,4176.48184499906,549,1120
+15219.76405,14967.4054,232.892,19.46665,true,DEFAULT-,-570648509535936272,0,1111028,626,1120,1120,22,4,0,116.44596666666666,116.44603333333333,4180.511252998406,550,1120

@@ -67,8 +67,7 @@ public class NycExperiment {
 	private final static int amountFilter = 20;
 	private static final int minNbOfBidders = 5;
 	private static int repetitions = 3;
-	private final static long timewindow = (long) 7.5*60*1000L;
-
+	private final static long timewindow = (long) 3*60*1000L;
 
 
 

@@ -241,7 +241,7 @@ public class ScenarioGenerator {
                 addedCount++;
                 Passenger passenger = (Passenger) object;
                 long pickupStartTime = passenger.getStartTime(this.builder.taxiDataStartTime);
-                long pickupTimeWindow = passenger.getStartTimeWindow(this.builder.taxiDataStartTime);
+                long pickupTimeWindow = this.builder.timewindow;
                 long deliveryStartTime = getDeliveryStartTime(passenger, routingTable);
                 Parcel.Builder parcelBuilder = Parcel.builder(passenger.getStartPoint(), passenger.getEndPoint())
                         .orderAnnounceTime(pickupStartTime)
@@ -415,6 +415,7 @@ public class ScenarioGenerator {
         private boolean routingTable;
         private String routingTablePath;
         private int amountFilter;
+        private long timewindow;
 
         Builder() {
             taxiDataDirectory = "/media/christof/Elements/Taxi_data/";
@@ -432,6 +433,7 @@ public class ScenarioGenerator {
             ridesharing = false;
             routingTable = false;
             amountFilter = 1;
+            timewindow = 5*60*1000L;
 
         }
 
@@ -509,6 +511,11 @@ public class ScenarioGenerator {
 
         public Builder setAmountFilter(int amountFilter) {
             this.amountFilter = amountFilter;
+            return this;
+        }
+
+        public Builder setTimewindow(long timewindow) {
+            this.timewindow = timewindow;
             return this;
         }
 

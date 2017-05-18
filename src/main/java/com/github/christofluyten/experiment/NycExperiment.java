@@ -67,6 +67,7 @@ public class NycExperiment {
 	private final static int amountFilter = 20;
 	private static final int minNbOfBidders = 5;
 	private static int repetitions = 3;
+	private final static long timewindow = 5*60*1000L;
 
 
 
@@ -151,6 +152,7 @@ public class NycExperiment {
 							.setRidesharing(ridesharing)
 							.setRoutingTablePath(routingTablePath)
 							.setAmountFilter(amountFilter)
+							.setTimewindow(timewindow)
 							.build();
 
 

@@ -1,2 +1,9 @@
 problem-class,instance,config,random-seed,repetition,rt-tick-infos,avg-interarrival-time,rt-count,st-count
 DEFAULT,,Central_noRidesharing_TW30_aFilter=5_bFilter=5,5519470499984739720,0,17296,249999995,17297,9439
+DEFAULT,,Central_noRidesharing_TW30_aFilter=5_bFilter=5,-570648509535936272,0,16829,249999994,16830,6633
+DEFAULT,,Central_noRidesharing_TW30_aFilter=5_bFilter=5,-5814032274792701469,0,16257,249999995,16258,8112
+DEFAULT,,Central_noRidesharing_TW30_aFilter=5_bFilter=5,5519470499984739720,0,16229,249999993,16230,8722
+DEFAULT,,Central_noRidesharing_TW30_aFilter=5_bFilter=5,-570648509535936272,0,16546,249999995,16547,6606
+DEFAULT,,Central_noRidesharing_TW30_aFilter=5_bFilter=5,-5814032274792701469,0,18118,249999990,18119,5303
+DEFAULT,,Central_noRidesharing_TW30_aFilter=5_bFilter=5,5519470499984739720,0,17918,249999992,17919,5817
+DEFAULT,,Central_noRidesharing_TW30_aFilter=5_bFilter=5,-570648509535936272,0,15580,249999990,15581,7546

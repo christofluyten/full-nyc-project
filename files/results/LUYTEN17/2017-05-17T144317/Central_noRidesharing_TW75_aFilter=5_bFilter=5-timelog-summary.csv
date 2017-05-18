@@ -1,2 +1,8 @@
 problem-class,instance,config,random-seed,repetition,rt-tick-infos,avg-interarrival-time,rt-count,st-count
 DEFAULT,,Central_noRidesharing_TW75_aFilter=5_bFilter=5,5519470499984739720,0,16453,249999801,16454,7353
+DEFAULT,,Central_noRidesharing_TW75_aFilter=5_bFilter=5,-570648509535936272,0,17945,249999994,17946,8246
+DEFAULT,,Central_noRidesharing_TW75_aFilter=5_bFilter=5,-5814032274792701469,0,17262,249999991,17263,7188
+DEFAULT,,Central_noRidesharing_TW75_aFilter=5_bFilter=5,5519470499984739720,0,17647,249999994,17648,6581
+DEFAULT,,Central_noRidesharing_TW75_aFilter=5_bFilter=5,-570648509535936272,0,17869,249999994,17870,7079
+DEFAULT,,Central_noRidesharing_TW75_aFilter=5_bFilter=5,-5814032274792701469,0,18073,249999988,18074,6511
+DEFAULT,,Central_noRidesharing_TW75_aFilter=5_bFilter=5,5519470499984739720,0,18264,249999992,18265,6283

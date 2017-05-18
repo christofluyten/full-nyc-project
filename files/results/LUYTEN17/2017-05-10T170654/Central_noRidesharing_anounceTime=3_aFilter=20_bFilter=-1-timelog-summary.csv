@@ -1,4 +1,0 @@
-problem-class,instance,config,random-seed,repetition,rt-tick-infos,avg-interarrival-time,rt-count,st-count
-DEFAULT,,Central_noRidesharing_anounceTime=3_aFilter=20_bFilter=-1,5519470499984739720,0,15430,249999497,15440,5931
-DEFAULT,,Central_noRidesharing_anounceTime=3_aFilter=20_bFilter=-1,-570648509535936272,0,15109,250000036,15121,7465
-DEFAULT,,Central_noRidesharing_anounceTime=3_aFilter=20_bFilter=-1,-5814032274792701469,0,14849,249998920,14861,6603

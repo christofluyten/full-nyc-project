@@ -64,7 +64,7 @@ public class NycExperiment {
 	private static String attribute = "noRidesharing_interval";
 	private static boolean debug = true;
 	private static boolean gui = true;
-	private final static int amountFilter = 10;
+	private final static int amountFilter = 5;
 	private static final int minNbOfBidders = 5;
 	private static int repetitions = 3;
 	private final static long timewindow = 5*60*1000L;

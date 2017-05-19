@@ -1,2 +1,10 @@
 problem-class,instance,config,random-seed,repetition,rt-tick-infos,avg-interarrival-time,rt-count,st-count
 DEFAULT,,MAS_noRidesharing_interval_aFilter=10_bFilter=5,5519470499984739720,0,6292,250007079,7413,13481
+DEFAULT,,MAS_noRidesharing_interval_aFilter=10_bFilter=5,-570648509535936272,0,6281,250007688,7402,13492
+DEFAULT,,MAS_noRidesharing_interval_aFilter=10_bFilter=5,-5814032274792701469,0,6281,250265235,7402,13492
+DEFAULT,,MAS_noRidesharing_interval_aFilter=10_bFilter=5,5519470499984739720,0,6313,250009526,7434,15025
+DEFAULT,,MAS_noRidesharing_interval_aFilter=10_bFilter=5,-570648509535936272,0,6310,250011243,7431,15028
+DEFAULT,,MAS_noRidesharing_interval_aFilter=10_bFilter=5,-5814032274792701469,0,6319,250010902,7439,15020
+DEFAULT,,MAS_noRidesharing_interval_aFilter=10_bFilter=5,5519470499984739720,0,6260,250007927,7381,14176
+DEFAULT,,MAS_noRidesharing_interval_aFilter=10_bFilter=5,-570648509535936272,0,6269,250016081,7390,14167
+DEFAULT,,MAS_noRidesharing_interval_aFilter=10_bFilter=5,-5814032274792701469,0,6266,250009918,7387,14170

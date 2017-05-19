@@ -60,14 +60,14 @@ public class NycExperiment {
 	private final static ObjectiveFunction objFunc = Gendreau06ObjectiveFunction.instance(70);
 	private final static boolean enableReauctions = true;
 	private final static boolean computationsLogging = false;
-	private final static boolean ridesharing = false;
+	private final static boolean ridesharing = true;
 	private static String attribute = "noRidesharing";
 	private static boolean debug = true;
 	private static boolean gui = true;
 	private final static int amountFilter = 20;
 	private static final int minNbOfBidders = 5;
 	private static int repetitions = 3;
-	private final static long timewindow = (long) 7.5*60*1000L;
+	private final static long timewindow = (long) 3*60*1000L;
 
 
 
@@ -156,12 +156,12 @@ public class NycExperiment {
 							.build();
 
 
-		Scenario scenario = sg.generateTaxiScenario(debug,0);
+		Scenario scenario = sg.generateTaxiScenario(0);
 
 		List<Scenario> scenarios = new ArrayList<>();
-		scenarios.add(sg.generateTaxiScenario(debug,0));
-		scenarios.add(sg.generateTaxiScenario(debug,1));
-		scenarios.add(sg.generateTaxiScenario(debug,2));
+		scenarios.add(sg.generateTaxiScenario(0));
+		scenarios.add(sg.generateTaxiScenario(1));
+		scenarios.add(sg.generateTaxiScenario(2));
 
 		System.out.println("measureDynamism " + Metrics.measureDynamism(scenario));
 		System.out.println("measureUrgency " + Metrics.measureUrgency(scenario));

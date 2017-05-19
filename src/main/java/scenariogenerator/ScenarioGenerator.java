@@ -39,47 +39,17 @@ import java.util.List;
  * Created by christof on 23.11.16.
  */
 public class ScenarioGenerator {
-    //    private static final String taxiDataDirectory = "D:/Taxi_data/";    //path to director with the FOIL-directories
-    private static final String TAXI_DATA_DIRECTORY = "/media/christof/Elements/Taxi_data/";
-    private static final String TRAVEL_TIMES_DIRECTORY = "/media/christof/Elements/Traffic_estimates/"; //path to director with the travel_times
-    private static final Date TAXI_DATA_START_TIME = new Date("2013-11-18 16:00:00");                   //format: "yyyy-mm-dd HH:mm:ss"
-    private static final Date TAXI_DATA_END_TIME = new Date("2013-11-18 17:00:00");
-
-//    private static final Date TAXI_START_TIME = new Date("2013-11-18 16:00:00");
-//    private static final Date TAXI_END_TIME = new Date("2013-11-18 17:00:00");
-    private static final double MAX_VEHICLE_SPEED_KMH = 120d;
-
-//    private static final long pickupDuration = 30 * 1000L;
-//    private static final long deliveryDuration = 30 * 1000L;
-
-    private static final long PICKUP_DURATION = 30 * 1000L;
-    private static final long DELIVERY_DURATION = 30 * 1000L;
 
 
-    private static final String SCENARIO_NAME = "TimeWindow";
-    private static final int CUT_LENGTH = 500;                                                  //maximum length in meters of a edge in the graph (or "link" in the "map")
-
-    private static final long SCENARIO_DURATION = (1 * 60 * 60 * 1000L) + 1L;
-
-    private static final long SCENARIO_DURATION_DEBUG = (1000 * 1000L) + 1L;
-
-    private static final boolean TRAFFIC = true;
-
-
-    private static final long TICK_SIZE = 250L;
-
-    private boolean debug;
 
     final Builder builder;
 
 
     private IOHandler ioHandler;
-    private String scenarioName;
     private int offset;
 
     public ScenarioGenerator(Builder builder) {
         this.builder = builder;
-        scenarioName = builder.scenarioName;
         IOHandler ioHandler = new IOHandler();
         ioHandler.setTaxiDataDirectory(builder.taxiDataDirectory);
         ioHandler.setScenarioStartTime(builder.taxiDataStartTime);
@@ -97,24 +67,6 @@ public class ScenarioGenerator {
 
     public static void main(String[] args) throws Exception {
 
-//        ScenarioGenerator sg =
-//                ScenarioGenerator.builder()
-//                        .setCutLength(CUT_LENGTH)
-//                        .setDeliveryDuration(DELIVERY_DURATION)
-//                        .setPickupDuration(PICKUP_DURATION)
-//                        .setMaxVehicleSpeedKmh(MAX_VEHICLE_SPEED_KMH)
-//                        .setRidesharing(false)
-//                        .setScenarioDuration(SCENARIO_DURATION_DEBUG)
-//                        .setScenarioName("test")
-//                        .setTaxiDataDirectory(TAXI_DATA_DIRECTORY)
-//                        .setTravelTimesDirectory(TRAVEL_TIMES_DIRECTORY)
-//                        .setTaxiDataStartTime(TAXI_DATA_START_TIME)
-//                        .setTaxiDataEndTime(TAXI_DATA_END_TIME)
-//                        .setTickSize(TICK_SIZE)
-//                        .setTraffic(TRAFFIC)
-//                        .build();
-//        Scenario s = sg.generateTaxiScenario(true);
-//        System.out.println("scenario made");
     }
 
     public IOHandler getIoHandler() {
@@ -134,28 +86,11 @@ public class ScenarioGenerator {
         }
     }
 
-    public Scenario generateTaxiScenario(boolean debug,int offset) throws Exception {
-        this.debug = debug;
+    public Scenario generateTaxiScenario(int offset) throws Exception {
         this.offset =offset;
         Scenario.Builder builder = Scenario.builder();
         addGeneralProperties(builder);
         addTaxis(builder);
-//        if (debug) {
-//            builder.addModel(
-//                    PDPGraphRoadModel.builderForGraphRm(
-//                            CachedNycGraphRoadModelImpl.builder(
-//                                            ListenableGraph.supplier(DotGraphIO.getMultiAttributeDataGraphSupplier(Paths.get(getIoHandler().getMapFilePath()))),this.builder.routingTablePath)
-//                                    .withSpeedUnit(NonSI.KILOMETERS_PER_HOUR)
-//                                    .withDistanceUnit(SI.KILOMETER)
-//                    )
-//                            .withAllowVehicleDiversion(true))
-//                    .addEvent(TimeOutEvent.create(this.builder.scenarioDuration))
-//                    .scenarioLength(this.builder.scenarioDuration);
-////                    .addEvent(TimeOutEvent.create(scenarioDuration))
-////                    .scenarioLength(scenarioDuration);
-//            addPassengersDebug(builder);
-////            addPassengers(builder);
-//        } else {
             builder.addModel(
                     PDPGraphRoadModel.builderForGraphRm(
                             CachedNycGraphRoadModelImpl.builder(
@@ -165,10 +100,8 @@ public class ScenarioGenerator {
                     )
                             .withAllowVehicleDiversion(true))
                     .scenarioLength(this.builder.scenarioDuration);
-//                            .scenarioLength(20*1000L);
 //        addPassengersAtInterval(builder);
         addPassengers(builder);
-//        addTaxis(builder);
 //            addJFK(builder);
 //            addManhattan(builder);
 //            addNYC(builder);
@@ -368,7 +301,6 @@ public class ScenarioGenerator {
         private boolean traffic;
         private long tickSize;
         private boolean ridesharing;
-        private boolean routingTable;
         private String routingTablePath;
         private int amountFilter;
         private long timewindow;
@@ -387,7 +319,6 @@ public class ScenarioGenerator {
             traffic = true;
             tickSize = 250L;
             ridesharing = false;
-            routingTable = false;
             amountFilter = 1;
             timewindow = 5*60*1000L;
 
@@ -460,7 +391,6 @@ public class ScenarioGenerator {
 
 
         public Builder setRoutingTablePath(String routingTablePath) {
-            this.routingTable = true;
             this.routingTablePath = routingTablePath;
             return this;
         }

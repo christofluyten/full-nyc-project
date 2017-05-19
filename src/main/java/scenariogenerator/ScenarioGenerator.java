@@ -167,7 +167,6 @@ public class ScenarioGenerator {
                     .scenarioLength(this.builder.scenarioDuration);
 //                            .scenarioLength(20*1000L);
 //        addPassengersAtInterval(builder);
-//        addPassengersWithDoubleTimewindow(builder);
         addPassengers(builder);
 //        addTaxis(builder);
 //            addJFK(builder);
@@ -287,49 +286,6 @@ public class ScenarioGenerator {
                 long pickupStartTime = interval*totalCount;
                 long pickupTimeWindow = passenger.getStartTimeWindow(this.builder.taxiDataStartTime);
                 long deliveryStartTime = getDeliveryStartTimeAtInterval(passenger, routingTable, pickupStartTime);
-                Parcel.Builder parcelBuilder = Parcel.builder(passenger.getStartPoint(), passenger.getEndPoint())
-                        .orderAnnounceTime(pickupStartTime)
-                        .pickupTimeWindow(TimeWindow.create(pickupStartTime, pickupStartTime + pickupTimeWindow))
-                        .pickupDuration(this.builder.pickupDuration)
-                        .deliveryDuration(this.builder.deliveryDuration);
-                if (this.builder.ridesharing) {
-                    parcelBuilder = parcelBuilder
-                            .deliveryTimeWindow(TimeWindow.create(pickupStartTime, deliveryStartTime + (pickupTimeWindow * 2)))
-                            .neededCapacity(passenger.getAmount());
-                } else {
-                    parcelBuilder = parcelBuilder
-                            .deliveryTimeWindow(TimeWindow.create(pickupStartTime, deliveryStartTime + (pickupTimeWindow)))
-                            .neededCapacity(4);
-                }
-                builder.addEvent(
-                        AddParcelEvent.create(parcelBuilder.buildDTO()));
-            }
-            totalCount++;
-//            if (debug && addedCount >= 3) {
-//                break;
-//            }
-
-        }
-        System.out.println(addedCount + " passengers added of the " + totalCount);
-    }
-
-
-    private void addPassengersWithDoubleTimewindow(Scenario.Builder builder) throws IOException, ClassNotFoundException {
-        if (!(getIoHandler().fileExists(ioHandler.getPositionedPassengersPath()))) {
-            PassengerHandler pfm = new PassengerHandler(ioHandler);
-            pfm.extractAndPositionPassengers();
-        }
-        List<SimulationObject> passengers = getIoHandler().readPositionedObjects(ioHandler.getPositionedPassengersPath());
-        int totalCount = 0;
-        int addedCount = 0;
-        RoutingTable routingTable = RoutingTableSupplier.get(this.builder.routingTablePath);
-        for (SimulationObject object : passengers) {
-            if ((totalCount+offset) % this.builder.amountFilter == 0) {
-                addedCount++;
-                Passenger passenger = (Passenger) object;
-                long pickupStartTime = passenger.getStartTime(this.builder.taxiDataStartTime);
-                long pickupTimeWindow = (long) ((1.5*passenger.getStartTimeWindow(this.builder.taxiDataStartTime)));
-                long deliveryStartTime = getDeliveryStartTime(passenger, routingTable);
                 Parcel.Builder parcelBuilder = Parcel.builder(passenger.getStartPoint(), passenger.getEndPoint())
                         .orderAnnounceTime(pickupStartTime)
                         .pickupTimeWindow(TimeWindow.create(pickupStartTime, pickupStartTime + pickupTimeWindow))

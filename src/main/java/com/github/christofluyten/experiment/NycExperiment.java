@@ -265,13 +265,13 @@ public class NycExperiment {
 				final String solverKey =
 						"Step-counting-hill-climbing-with-entity-tabu-and-strategic-oscillation";
 				final long centralUnimprovedMs = 10000L;
-//				configs.add(createCentral(
-//						opFfdFactory.withSolverXmlResource(
-//								"com/github/rinde/jaamas17/jaamas-solver.xml")
-//								.withName("Central_" + attribute)
-//								.withSolverHeuristic(heuristic)
-//								.withUnimprovedMsLimit(centralUnimprovedMs),
-//						"Central_" + attribute+"_aFilter="+amountFilter+"_TW="+timewindow));
+				configs.add(createCentral(
+						opFfdFactory.withSolverXmlResource(
+								"com/github/rinde/jaamas17/jaamas-solver.xml")
+								.withName("Central_" + attribute)
+								.withSolverHeuristic(heuristic)
+								.withUnimprovedMsLimit(centralUnimprovedMs),
+						"Central_" + attribute+"_aFilter="+amountFilter+"_TW="+timewindow));
 		}
 		System.out.println("created the mainConfigs");
 		return configs;

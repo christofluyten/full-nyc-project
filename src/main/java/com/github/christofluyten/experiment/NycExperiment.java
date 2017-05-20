@@ -67,7 +67,7 @@ public class NycExperiment {
 	private final static int amountFilter = 5;
 	private static final int minNbOfBidders = 5;
 	private static int repetitions = 3;
-	private final static long timewindow = (long) 7.5*60*1000L;
+	private final static long timewindow = (long) 3*60*1000L;
 
 
 
@@ -210,7 +210,7 @@ public class NycExperiment {
 //								.withDynamicRelativeSpeedVisualization()
 										)
 //										.with(AuctionPanel.builder())
-//										.with(RoutePanel.builder())
+										.with(RoutePanel.builder())
 										.with(TimeLinePanel.builder())
 //							.with(RtSolverPanel.builder())
 										.withResolution(12800, 10240)
@@ -241,7 +241,7 @@ public class NycExperiment {
 
 		final List<MASConfiguration> configs = new ArrayList<>();
 		if (debug){
-			if(debug) {
+			if(!debug) {
 				configs.add(createMAS(opFfdFactory, objFunc, rpMs, bMs,
 						maxAuctionDurationSoft, enableReauctions, reactCooldownPeriodMs, computationsLogging));
 				System.out.println("MAS");
@@ -255,7 +255,7 @@ public class NycExperiment {
 								.withName("Central_" + attribute)
 								.withSolverHeuristic(heuristic)
 								.withUnimprovedMsLimit(centralUnimprovedMs),
-						"Central_" + attribute+"_aFilter="+amountFilter+"_TW="+timewindow));
+						"Central_" + attribute+"_aFilter="+amountFilter+"_TW="+(timewindow/(60*1000L))));
 				System.out.println("Central");
 
 			}
@@ -271,7 +271,7 @@ public class NycExperiment {
 								.withName("Central_" + attribute)
 								.withSolverHeuristic(heuristic)
 								.withUnimprovedMsLimit(centralUnimprovedMs),
-						"Central_" + attribute+"_aFilter="+amountFilter+"_TW="+timewindow));
+						"Central_" + attribute+"_aFilter="+amountFilter+"_TW="+(timewindow/(60*1000L))));
 		}
 		System.out.println("created the mainConfigs");
 		return configs;
@@ -283,7 +283,7 @@ public class NycExperiment {
 			long reauctCooldownPeriodMs, boolean computationsLogging) {
 
 		MASConfiguration.Builder b = MASConfiguration.pdptwBuilder()
-				.setName("MAS_" + attribute+"_aFilter="+amountFilter+"_TW="+timewindow)
+				.setName("MAS_" + attribute+"_aFilter="+amountFilter+"_TW="+(timewindow/(60*1000L)))
 				.addEventHandler(TimeOutEvent.class, TimeOutEvent.ignoreHandler())
 				.addEventHandler(AddDepotEvent.class, AddDepotEvent.defaultHandler())
 				.addEventHandler(AddParcelEvent.class, AddParcelEvent.defaultHandler())

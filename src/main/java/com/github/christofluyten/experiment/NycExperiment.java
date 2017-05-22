@@ -60,14 +60,14 @@ public class NycExperiment {
 	private final static ObjectiveFunction objFunc = Gendreau06ObjectiveFunction.instance(70);
 	private final static boolean enableReauctions = true;
 	private final static boolean computationsLogging = false;
-	private final static boolean ridesharing = true;
+	private final static boolean ridesharing = false;
 	private static String attribute = "noRidesharing";
 	private static boolean debug = true;
 	private static boolean gui = true;
-	private final static int amountFilter = 5;
+	private final static int amountFilter = 1;
 	private static final int minNbOfBidders = 5;
 	private static int repetitions = 3;
-	private final static long timewindow = (long) 7*60*1000L;
+	private final static long timewindow = (long) 5*60*1000L;
 
 
 
@@ -260,8 +260,8 @@ public class NycExperiment {
 
 			}
 		} else {
-				configs.add(createMAS(opFfdFactory, objFunc, rpMs, bMs,
-						maxAuctionDurationSoft, enableReauctions, reactCooldownPeriodMs, computationsLogging));
+//				configs.add(createMAS(opFfdFactory, objFunc, rpMs, bMs,
+//						maxAuctionDurationSoft, enableReauctions, reactCooldownPeriodMs, computationsLogging));
 				final String solverKey =
 						"Step-counting-hill-climbing-with-entity-tabu-and-strategic-oscillation";
 				final long centralUnimprovedMs = 10000L;

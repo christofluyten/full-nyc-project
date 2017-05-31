@@ -44,11 +44,9 @@ public class CachedNycGraphRoadModelImpl extends GraphRoadModelImpl {
 	@Override
 	public RoadPath getPathTo(Point from, Point to, Unit<Duration> timeUnit,
 			Measure<Double, Velocity> speed, GeomHeuristic heuristic) {
-//		System.out.println("using getPathTo in CNGRMI");
-
 		return routingTable.getRoadPathTo(from, to);
-		
 	}
+
 	@Override
 	public List<Point> getShortestPathTo(Point from, Point to) {
 		final List<Point> path = new ArrayList<>();

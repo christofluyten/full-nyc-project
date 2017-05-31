@@ -26,8 +26,7 @@ import data.object.SimulationObject;
 import data.object.Taxi;
 import data.time.Date;
 import fileMaker.IOHandler;
-import fileMaker.PassengerHandler;
-import fileMaker.TaxiHandler;
+import fileMaker.SimulationObjectHandler;
 
 import javax.measure.unit.NonSI;
 import javax.measure.unit.SI;
@@ -132,7 +131,7 @@ public class ScenarioGenerator {
 
     private void addTaxis(Scenario.Builder builder) throws IOException, ClassNotFoundException {
         if (!(getIoHandler().fileExists(ioHandler.getPositionedTaxisPath()))) {
-            TaxiHandler tfm = new TaxiHandler(ioHandler);
+            SimulationObjectHandler tfm = new SimulationObjectHandler(ioHandler);
             tfm.extractAndPositionTaxis();
         }
         List<SimulationObject> taxis = getIoHandler().readPositionedObjects(ioHandler.getPositionedTaxisPath());
@@ -161,7 +160,7 @@ public class ScenarioGenerator {
 
     private void addPassengers(Scenario.Builder builder) throws IOException, ClassNotFoundException {
         if (!(getIoHandler().fileExists(ioHandler.getPositionedPassengersPath()))) {
-            PassengerHandler pfm = new PassengerHandler(ioHandler);
+            SimulationObjectHandler pfm = new SimulationObjectHandler(ioHandler);
             pfm.extractAndPositionPassengers();
         }
         List<SimulationObject> passengers = getIoHandler().readPositionedObjects(ioHandler.getPositionedPassengersPath());
@@ -203,7 +202,7 @@ public class ScenarioGenerator {
 
     private void addPassengersAtInterval(Scenario.Builder builder) throws IOException, ClassNotFoundException {
         if (!(getIoHandler().fileExists(ioHandler.getPositionedPassengersPath()))) {
-            PassengerHandler pfm = new PassengerHandler(ioHandler);
+            SimulationObjectHandler pfm = new SimulationObjectHandler(ioHandler);
             pfm.extractAndPositionPassengers();
         }
         List<SimulationObject> passengers = getIoHandler().readPositionedObjects(ioHandler.getPositionedPassengersPath());

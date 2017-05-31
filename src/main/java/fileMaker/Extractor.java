@@ -182,10 +182,7 @@ class Extractor {
                 if (manhattan.contains(new Point(passenger.getStartLon(), passenger.getStartLat()))
                         && manhattan.contains(new Point(passenger.getEndLon(), passenger.getEndLat()))) {
                     simulationObjectList.add(passenger);
-//                    System.out.println("added");
                 }
-//                System.out.println(passenger.getStartLon()+" "+passenger.getStartLat()+" "+
-//                        passenger.getEndLon()+" "+passenger.getEndLat());
             }
         }
     }
@@ -199,22 +196,8 @@ class Extractor {
             if(!licenseNbSet.contains(splitLine[0])){
                 if(cleanLine(splitLine)) {
                     int capacity = 4;
-//                    try {
-//                        capacity = taxiCapacityMap.get(splitLine[0]);
-//                    } catch (Exception e) {
-//                        System.out.println("Failed to find a capacity for " + splitLine[0]);
-//                    }
-                    String[] line;
-                    Taxi taxi;
-//                    if(positioningMap.containsKey(splitLine[0])) {
-//                        line = positioningMap.get(splitLine[0]);
-//                        taxi = new Taxi(line[0], capacity, new Date(line[6]), Double.valueOf(line[12]), -1 * Double.valueOf(line[13]));
-//                        count1++;
-//                    } else {
-//                        taxi = new Taxi(splitLine[0], capacity, new Date(splitLine[5]), Double.valueOf(splitLine[10]), -1 * Double.valueOf(splitLine[11]));
-                        count2++;
-//                    }
-                    taxi = new Taxi(splitLine[0], capacity, new Date(splitLine[5]), Double.valueOf(splitLine[10]), -1 * Double.valueOf(splitLine[11]));
+                    count2++;
+                    Taxi taxi = new Taxi(splitLine[0], capacity, new Date(splitLine[5]), Double.valueOf(splitLine[10]), -1 * Double.valueOf(splitLine[11]));
 
                     simulationObjectList.add(taxi);
                     licenseNbSet.add(splitLine[0]);

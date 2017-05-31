@@ -50,6 +50,11 @@ public class AuctionCommModel<T extends Bid<T>>
     extends AbstractCommModel<Bidder<T>>
     implements TickListener {
 
+  double totalCommDistance = 0d;
+  double totalAmountOfBidders = 0d;
+  double amountOfBids = 0d;
+
+
   final long maxAuctionDurationMs;
   final Map<Parcel, ParcelAuctioneer> parcelAuctioneerMap;
   final AuctionStopCondition<T> stopCondition;
@@ -410,6 +415,12 @@ public class AuctionCommModel<T extends Bid<T>>
         bidders = filterBidders(communicators, parcel);
         nbOfBidders = bidders.size();
       }
+      totalAmountOfBidders += nbOfBidders;
+      amountOfBids += 1;
+
+//      System.out.println("avg amount of bidders "+(totalAmountOfBidders/amountOfBids));
+//      System.out.println("avg comm distance "+(totalCommDistance/amountOfBids));
+
 
       for (final Bidder<T> b : bidders) {
 //        System.out.println("bidder "+b.toString()+" "+Point.distanceLonLat(b.getBidderLocation(),parcel.getPickupLocation()));
@@ -428,6 +439,7 @@ public class AuctionCommModel<T extends Bid<T>>
         result = filterBidders(bidders,parcel,commDistance);
         commDistance += commDistanceExtention;
       }
+      totalCommDistance += commDistance-commDistanceExtention;
 //      System.out.println("commDistance "+commDistance+" amount of bidders "+result.size());
       return result;
     }

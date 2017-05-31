@@ -64,7 +64,9 @@ public class NycExperiment {
 	private static String attribute = "noRidesharing";
 	private static boolean debug = true;
 	private static boolean gui = true;
-	private final static int amountFilter = 1;
+	private final static int amountFilter = 5;
+	private final static double commDist = 0.3;
+	private final static double commExt = 0.1;
 	private static final int minNbOfBidders = 5;
 	private static int repetitions = 3;
 	private final static long timewindow = (long) 5*60*1000L;
@@ -211,7 +213,7 @@ public class NycExperiment {
 										)
 //										.with(AuctionPanel.builder())
 										.with(RoutePanel.builder())
-										.with(TimeLinePanel.builder())
+//										.with(TimeLinePanel.builder())
 //							.with(RtSolverPanel.builder())
 										.withResolution(12800, 10240)
 										.withAutoPlay()
@@ -241,7 +243,7 @@ public class NycExperiment {
 
 		final List<MASConfiguration> configs = new ArrayList<>();
 		if (debug){
-			if(!debug) {
+			if(debug) {
 				configs.add(createMAS(opFfdFactory, objFunc, rpMs, bMs,
 						maxAuctionDurationSoft, enableReauctions, reactCooldownPeriodMs, computationsLogging));
 				System.out.println("MAS");
@@ -260,8 +262,8 @@ public class NycExperiment {
 
 			}
 		} else {
-//				configs.add(createMAS(opFfdFactory, objFunc, rpMs, bMs,
-//						maxAuctionDurationSoft, enableReauctions, reactCooldownPeriodMs, computationsLogging));
+				configs.add(createMAS(opFfdFactory, objFunc, rpMs, bMs,
+						maxAuctionDurationSoft, enableReauctions, reactCooldownPeriodMs, computationsLogging));
 				final String solverKey =
 						"Step-counting-hill-climbing-with-entity-tabu-and-strategic-oscillation";
 				final long centralUnimprovedMs = 10000L;
@@ -324,7 +326,7 @@ public class NycExperiment {
 												AuctionStopConditions
 												.<DoubleBid>maxAuctionDuration(maxAuctionDurationSoft))))
 						.withMaxAuctionDuration(maxAuctionDurationHard)
-						.withBidderFilter(new AuctionCommModel.BidderFilter(1d,1d,minNbOfBidders)))
+						.withBidderFilter(new AuctionCommModel.BidderFilter(commDist,commExt,minNbOfBidders)))
 				.addModel(RealtimeClockLogger.builder())
 				 ;
 		if (debug) {

@@ -418,8 +418,8 @@ public class AuctionCommModel<T extends Bid<T>>
       totalAmountOfBidders += nbOfBidders;
       amountOfBids += 1;
 
-//      System.out.println("avg amount of bidders "+(totalAmountOfBidders/amountOfBids));
-//      System.out.println("avg comm distance "+(totalCommDistance/amountOfBids));
+      System.out.println("avg amount of bidders "+(totalAmountOfBidders/amountOfBids));
+      System.out.println("avg comm distance "+(totalCommDistance/amountOfBids));
 
 
       for (final Bidder<T> b : bidders) {

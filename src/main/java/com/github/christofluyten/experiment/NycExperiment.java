@@ -64,10 +64,10 @@ public class NycExperiment {
 	private static String attribute = "noRidesharing";
 	private static boolean debug = true;
 	private static boolean gui = true;
-	private final static int amountFilter = 1;
-	private final static double commDist = 0.3;
-	private final static double commExt = 0.1;
-	private static final int minNbOfBidders = 5;
+	private final static int amountFilter = 2;
+	private final static double commDist = 0.1;
+	private final static double commExt = 0.05;
+	private static final int minNbOfBidders = 3;
 	private static int repetitions = 3;
 	private final static long timewindow = (long) 5*60*1000L;
 

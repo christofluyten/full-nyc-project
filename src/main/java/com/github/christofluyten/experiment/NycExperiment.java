@@ -65,7 +65,7 @@ public class NycExperiment {
 	private static boolean debug = true;
 	private static boolean gui = true;
 	private final static int amountFilter = 5;
-	private final static double commDist = 1.0;
+	private final static double commDist = 2.0;
 	private final static double commExt = 0.1;
 	private static final int minNbOfBidders = 5;
 	private static int repetitions = 3;

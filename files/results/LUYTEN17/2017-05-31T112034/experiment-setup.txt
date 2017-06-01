@@ -1,9 +1,0 @@
-Experiment summary
-Number of simulations: 12
-Number of configurations: 2
-Number of scenarios: 2
-Number of repetitions: 3
-Number of seed repetitions: 1
-Configurations:
-MAS_noRidesharing_aFilter=2_0.3_0.1_TW=5
-Central_noRidesharing_aFilter=2_0.3_0.1_TW=5

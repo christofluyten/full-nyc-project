@@ -99,8 +99,8 @@ public class ScenarioGenerator {
                     )
                             .withAllowVehicleDiversion(true))
                     .scenarioLength(this.builder.scenarioDuration);
-//        addPassengersAtInterval(builder);
-        addPassengers(builder);
+        addPassengersAtInterval(builder);
+//        addPassengers(builder);
 //            addJFK(builder);
 //            addManhattan(builder);
 //            addNYC(builder);
@@ -216,7 +216,7 @@ public class ScenarioGenerator {
                 addedCount++;
                 Passenger passenger = (Passenger) object;
                 long pickupStartTime = interval*totalCount;
-                long pickupTimeWindow = passenger.getStartTimeWindow(this.builder.taxiDataStartTime);
+                long pickupTimeWindow = this.builder.timewindow;
                 long deliveryStartTime = getDeliveryStartTimeAtInterval(passenger, routingTable, pickupStartTime);
                 Parcel.Builder parcelBuilder = Parcel.builder(passenger.getStartPoint(), passenger.getEndPoint())
                         .orderAnnounceTime(pickupStartTime)

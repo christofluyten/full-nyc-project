@@ -60,7 +60,7 @@ public class NycExperiment {
 	private final static ObjectiveFunction objFunc = Gendreau06ObjectiveFunction.instance(70);
 	private final static boolean enableReauctions = true;
 	private final static boolean computationsLogging = false;
-	private final static boolean ridesharing = false;
+	private final static boolean ridesharing = true;
 	private static String attribute = "noRidesharing";
 	private static boolean debug = true;
 	private static boolean gui = true;
@@ -88,6 +88,7 @@ public class NycExperiment {
 	private static final int cutLength = 500;                                                  //maximum length in meters of a edge in the graph (or "link" in the "map")
 
 	private static final long scenarioDuration = (1 * 60 * 60 * 1000L) + 1L;
+//	private static final long scenarioDuration = (60 * 1000L) + 1L;
 
 	private static final long scenarioDurationDebug = (1000 * 1000L) + 1L;
 

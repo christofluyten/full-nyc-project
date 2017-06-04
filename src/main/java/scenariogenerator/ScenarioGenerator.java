@@ -101,6 +101,8 @@ public class ScenarioGenerator {
                     .scenarioLength(this.builder.scenarioDuration);
 //        addPassengersAtInterval(builder);
         addPassengers(builder);
+//        addPassengerstest(builder);
+
 //            addJFK(builder);
 //            addManhattan(builder);
 //            addNYC(builder);
@@ -240,6 +242,49 @@ public class ScenarioGenerator {
 //                break;
 //            }
 
+        }
+        System.out.println(addedCount + " passengers added of the " + totalCount);
+    }
+
+    private void addPassengerstest(Scenario.Builder builder) throws IOException, ClassNotFoundException {
+        List<SimulationObject> passengers = getIoHandler().readPositionedObjects(ioHandler.getPositionedPassengersPath());
+        int nbOfPassengers = 20;
+        int groupSize = 4;
+        long interval = this.builder.scenarioDuration/(nbOfPassengers/groupSize);
+        int totalCount = 0;
+        int addedCount = 0;
+        int groupcount = 0;
+        RoutingTable routingTable = RoutingTableSupplier.get(this.builder.routingTablePath);
+        for (SimulationObject object : passengers) {
+            while(groupcount < groupSize){
+                addedCount++;
+                Passenger passenger = (Passenger) object;
+                long pickupStartTime = interval * totalCount;
+                long pickupTimeWindow = this.builder.timewindow;
+                long deliveryStartTime = getDeliveryStartTimeAtInterval(passenger, routingTable, pickupStartTime);
+                Parcel.Builder parcelBuilder = Parcel.builder(passenger.getStartPoint(), passenger.getEndPoint())
+                        .orderAnnounceTime(pickupStartTime)
+                        .pickupTimeWindow(TimeWindow.create(pickupStartTime, pickupStartTime + pickupTimeWindow))
+                        .pickupDuration(this.builder.pickupDuration)
+                        .deliveryDuration(this.builder.deliveryDuration);
+                if (this.builder.ridesharing) {
+                    parcelBuilder = parcelBuilder
+                            .deliveryTimeWindow(TimeWindow.create(pickupStartTime, deliveryStartTime + (pickupTimeWindow * 2)))
+                            .neededCapacity(passenger.getAmount());
+                } else {
+                    parcelBuilder = parcelBuilder
+                            .deliveryTimeWindow(TimeWindow.create(pickupStartTime, deliveryStartTime + (pickupTimeWindow)))
+                            .neededCapacity(4);
+                }
+                builder.addEvent(
+                        AddParcelEvent.create(parcelBuilder.buildDTO()));
+                groupcount++;
+            }
+            totalCount++;
+            if (totalCount >= nbOfPassengers/groupSize) {
+                break;
+            }
+            groupcount = 0;
         }
         System.out.println(addedCount + " passengers added of the " + totalCount);
     }

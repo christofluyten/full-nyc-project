@@ -20,7 +20,8 @@ public class Link implements Serializable {
     private final double endX;
     private final double endY;
     private Map<Date,Double> travelTimesMap = new HashMap<>();
-    private int amountOfCuts = 0;
+    private double speed;
+//    private int amountOfCuts = 0;
 
     private static double highestLongitude = -73.696494;
     private static double lowestLongitude = -74.203028;
@@ -102,11 +103,17 @@ public class Link implements Serializable {
         return latitudeStep;
     }
 
-    public Map<Date, Double> getTravelTimesMap() {
-        return travelTimesMap;
+//    public Map<Date, Double> getTravelTimesMap() {
+//        return travelTimesMap;
+//    }
+
+    public double getSpeed() {
+        return speed;
     }
 
-
+    public void setSpeed(double speed) {
+        this.speed = speed;
+    }
 
     public Node getStartNode(){
         return new Node(startX,startY);
@@ -116,9 +123,9 @@ public class Link implements Serializable {
         return new Node(endX,endY);
     }
 
-    public void setTravelTimesMap(Map<Date, Double> travelTimesMap) {
-        this.travelTimesMap = travelTimesMap;
-    }
+//    public void setTravelTimesMap(Map<Date, Double> travelTimesMap) {
+//        this.travelTimesMap = travelTimesMap;
+//    }
 
     public void printTravelTimesMap(){
         for(Date date:travelTimesMap.keySet()){
@@ -127,9 +134,9 @@ public class Link implements Serializable {
         System.out.print("\n");
     }
 
-    public void setAmountOfCuts(int amountOfCuts) {
-        this.amountOfCuts = amountOfCuts;
-    }
+//    public void setAmountOfCuts(int amountOfCuts) {
+//        this.amountOfCuts = amountOfCuts;
+//    }
 
     @Override
     public String toString() {
@@ -180,8 +187,9 @@ public class Link implements Serializable {
         return (String.valueOf(startX).hashCode() ^ String.valueOf(startY).hashCode())*(String.valueOf(endX).hashCode() ^ String.valueOf(endY).hashCode());
     }
 
-    public double getSpeed(Date date) {
+//    public double getSpeed(Date date) {
+//
+//        return ((length*(amountOfCuts+1))/travelTimesMap.get(date))*3.6;
+//    }
 
-        return ((length*(amountOfCuts+1))/travelTimesMap.get(date))*3.6;
-    }
 }

@@ -21,6 +21,7 @@ import java.util.Set;
  */
 public class IOHandler {
     private static final String mapFileName="map";
+    private static final String routingtableFileName="routingtable";
     private static final String linkMapFileName ="linkMap";
     private static final String ptclFileName = "posToClosestLink";
     private static final String scenarioFileName = "scenario";
@@ -59,10 +60,6 @@ public class IOHandler {
         return linksDirectory + linkToMinAndAverageTravelTimes;
     }
 
-    public static void writeLinkMap(Map<String, Link> map, String cutLength) throws IOException, ClassNotFoundException {
-        writeFile(map, linksDirectory + linkMapFileName + cutLength);
-    }
-
     public static Object readFile(String path) throws IOException, ClassNotFoundException {
         System.out.println("start reading " + path);
         File file = new File(path);
@@ -89,16 +86,12 @@ public class IOHandler {
         return linksDirectory + "dateToTravelTimes_" + startDate + "_" + endDate;
     }
 
-    public static String getRoutingTablePath() {
-        return mapsDirectory + "RoutingTable";
+    public String getRoutingTablePath() {
+        return mapsDirectory + routingtableFileName+"_"+scenarioStartTime.getShortStringDateForPath()+"_"+scenarioEndTime.getShortStringDateForPath() ;
     }
 
     public String getScenarioFileName() {
         return scenarioFileName;
-    }
-
-    String getTaxiCapacityPath() {
-        return taxisDirectory + "capacity_" + scenarioStartTime.getYear();
     }
 
     public String getAttribute() {
@@ -109,12 +102,10 @@ public class IOHandler {
         this.attribute = attribute;
     }
 
-    public void makeMap() throws IOException {
-        if(!fileExists(getMapFilePath())) CsvConverter.convertLinkMap(this);
-    }
+
 
     public String getMapFilePath(){
-        return mapsDirectory + mapFileName + getCutLength() + ".dot";
+        return mapsDirectory + mapFileName + "_"+scenarioStartTime.getShortStringDateForPath()+"_"+scenarioEndTime.getShortStringDateForPath() + ".dot";
     }
 
     private String getCutLength() {
@@ -192,8 +183,8 @@ public class IOHandler {
     }
 
 
-    private String getLinkMapPath() {
-        return linksDirectory + linkMapFileName + getCutLength();
+    public String getLinkMapPath() {
+        return linksDirectory + linkMapFileName + "_"+scenarioStartTime.getShortStringDateForPath()+"_"+scenarioEndTime.getShortStringDateForPath();
     }
 
     public String getScenarioFileFullPath() {
@@ -275,7 +266,6 @@ public class IOHandler {
                     if (!fileExists(linksDirectory+linkMapFileName)) {
                         LinkMapHandler.makeLinkMap(getLinksFilePath(), this);
                     }
-                    LinkMapHandler.cut(linksDirectory + linkMapFileName, cutLength);
                     readLinkMap();
                 } catch (Exception e2){
                     System.out.println("geen links.csv: " + getLinksFilePath() + " of iets veranderd aan link");

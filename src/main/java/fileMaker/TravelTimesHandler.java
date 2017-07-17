@@ -124,20 +124,29 @@ public class TravelTimesHandler {
         }
         writer.close();
     }
+
+    //Makes a map
     static void makeDateToTravelTimes(data.time.Date startDate, data.time.Date endDate, IOHandler ioHandler) throws IOException, ClassNotFoundException {
         System.out.println("making dateToTravelTimes");
+
+        //Extract the lines from TravelTimes from start- to enddate
         List<String[]> splitLines = Extractor.extractLinesFromTravelTimes(ioHandler.getTravelTimesPath(startDate.getYear()),startDate,endDate);
-//        System.out.println(splitLines.size()+" "+startDate.getStringDate()+" "+endDate.getStringDate());
+
+        //Initiate dateToTravelTimes map, which maps the link id's to a map with dates and traveltimes
         Map<String,Map<data.time.Date,Double>> dateToTravelTimes = new HashMap<>();
+
+        //Get all links id's
         Map<String,String> nodesIdToLinkId = (Map<String, String>) IOHandler.readFile(IOHandler.getNodesIdToLinkIdPath());
         List<String> linkIds = new ArrayList<>();
         for(String nodeId : nodesIdToLinkId.keySet()){
             linkIds.add(nodesIdToLinkId.get(nodeId));
         }
 
+        //Insert all link id's in the dateToTravelTimes map
         for(String linkId:linkIds){
             dateToTravelTimes.put(linkId,new HashMap<data.time.Date,Double>());
         }
+
 
         for(String[] splitLine:splitLines){
             try {
@@ -174,6 +183,30 @@ public class TravelTimesHandler {
         writer.close();
     }
 
+//    public static void setTraffic(Map<String, Link> linkMap, IOHandler ioHandler) throws IOException, ClassNotFoundException {
+//        Map<String,List<Double>> minAndAverageTravelTimes = ioHandler.getLinkToMinAndAverageTravelTimes();
+//        Map<String,Map<data.time.Date,Double>> dateToTravelTimes = ioHandler.getDateToTravelTimes();
+//        data.time.Date startDate = ioHandler.getScenarioStartTime();
+//        data.time.Date endDate = ioHandler.getScenarioEndTime();
+//        for(String id : linkMap.keySet()){
+//            Link link = linkMap.get(id);
+//            data.time.Date iterator = new data.time.Date(startDate.getStringDate());
+//            while (iterator.lessThan(endDate)){
+//                try{
+//                    link.getTravelTimesMap().put(iterator,dateToTravelTimes.get(id).get(iterator));
+//                } catch (NullPointerException e1){
+//                    try {
+//                        link.getTravelTimesMap().put(iterator,minAndAverageTravelTimes.get(id).get(1));
+//                    } catch (NullPointerException e2){
+//                        Double length = link.getLengthInM();
+//                        link.getTravelTimesMap().put(iterator,length/17.8816);
+//                    }
+//                }
+//                iterator = data.time.Date.getNextHour(iterator,1);
+//            }
+//        }
+//    }
+
     public static void setTraffic(Map<String, Link> linkMap, IOHandler ioHandler) throws IOException, ClassNotFoundException {
         Map<String,List<Double>> minAndAverageTravelTimes = ioHandler.getLinkToMinAndAverageTravelTimes();
         Map<String,Map<data.time.Date,Double>> dateToTravelTimes = ioHandler.getDateToTravelTimes();
@@ -182,19 +215,28 @@ public class TravelTimesHandler {
         for(String id : linkMap.keySet()){
             Link link = linkMap.get(id);
             data.time.Date iterator = new data.time.Date(startDate.getStringDate());
-            while (iterator.lessThan(endDate)){
-                try{
-                    link.getTravelTimesMap().put(iterator,dateToTravelTimes.get(id).get(iterator));
-                } catch (NullPointerException e1){
-                    try {
-                        link.getTravelTimesMap().put(iterator,minAndAverageTravelTimes.get(id).get(1));
-                    } catch (NullPointerException e2){
-                        Double length = link.getLengthInM();
-                        link.getTravelTimesMap().put(iterator,length/17.8816);
-                    }
+            int nbOfTravelTimes = 0;
+            double totalTravelTime = 0;
+            while (iterator.lessThan(endDate)) {
+                try {
+                    totalTravelTime += dateToTravelTimes.get(id).get(iterator);
+                    nbOfTravelTimes++;
+                } catch (NullPointerException e1) {
                 }
                 iterator = data.time.Date.getNextHour(iterator,1);
             }
+            if(nbOfTravelTimes == 0){
+                try {
+                    totalTravelTime = minAndAverageTravelTimes.get(id).get(1);
+                } catch (NullPointerException e2){
+                    Double length = link.getLengthInM();
+                    totalTravelTime = length/(30/3.6);
+                }
+                nbOfTravelTimes++;
+            }
+            double averageTT = totalTravelTime/nbOfTravelTimes;
+            double speed = (link.getLengthInM()/averageTT)*3.6;
+            link.setSpeed(speed);
         }
     }
 }

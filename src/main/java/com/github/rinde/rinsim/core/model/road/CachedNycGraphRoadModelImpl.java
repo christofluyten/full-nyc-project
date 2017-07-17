@@ -10,7 +10,7 @@ import javax.measure.quantity.Duration;
 import javax.measure.quantity.Velocity;
 import javax.measure.unit.Unit;
 
-import com.github.christofluyten.routingtable.RoutingTable;
+import com.github.christofluyten.routingtable.Routingtable;
 import com.github.rinde.rinsim.geom.*;
 import com.google.common.base.Optional;
 import com.google.common.base.Supplier;
@@ -29,12 +29,12 @@ public class CachedNycGraphRoadModelImpl extends GraphRoadModelImpl {
 
 	private final RoadModelSnapshot snapshot;
 
-	private RoutingTable routingTable;
+	private Routingtable routingTable;
 
 	CachedNycGraphRoadModelImpl(Graph<?> g, CachedNycGraphRMB b) {
 		super(g, b);
 
-		routingTable = RoutingTableSupplier.get(b.getCachePath());
+		routingTable = RoutingtableSupplier.get(b.getCachePath());
 
 		snapshot = CachedNycGraphRoadModelSnapshot.create(
 				ImmutableGraph.copyOf(graph), routingTable, b.getDistanceUnit());

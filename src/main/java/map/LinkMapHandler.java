@@ -60,13 +60,11 @@ public class LinkMapHandler {
         if(ioHandler.getWithTraffic()){
             TravelTimesHandler.setTraffic(newLinkMap,ioHandler);
         }
-        IOHandler.writeLinkMap(newLinkMap,"");
+        cut(newLinkMap, 500, ioHandler);
     }
 
 
-    public static void cut(String linkMapPath, double maximumStreetLength) throws IOException, ClassNotFoundException {
-        IOHandler ioHandler = new IOHandler();
-        Map<String,Link> linkMap = (Map<String, Link>) ioHandler.readFile(linkMapPath);
+    public static void cut(Map<String, Link> linkMap, double maximumStreetLength, IOHandler ioHandler) throws IOException, ClassNotFoundException {
         Map<String,Link> newLinkMap = new HashMap<>();
         int extaLinks = 0;        for(String id : linkMap.keySet()){
             Link link = linkMap.get(id);
@@ -89,16 +87,19 @@ public class LinkMapHandler {
                 int i = 0;
                 while (i + 3 < coordinates.size()) {
                     Link newLink = new Link(String.valueOf(getNextId()), length / (amountOfParts), coordinates.get(i), coordinates.get(i + 1), coordinates.get(i + 2), coordinates.get(i + 3));
-                    newLink.setTravelTimesMap(link.getTravelTimesMap());
-                    newLink.setAmountOfCuts(amountOfParts - 1);
+//                    newLink.setTravelTimesMap(link.getTravelTimesMap());
+                    newLink.setSpeed(link.getSpeed());
+//                    newLink.setAmountOfCuts(amountOfParts - 1);
                     newLinkMap.put(newLink.getId(),newLink);
                     i += 2;
                 }
             } else {
                 //TODO test this
                 Link newLink = new Link(String.valueOf(getNextId()), link.getLengthInM(), link.getStartX(), link.getStartY(), link.getEndX(), link.getEndY());
-                newLink.setTravelTimesMap(link.getTravelTimesMap());
-                newLink.setAmountOfCuts(amountOfParts - 1);
+//                newLink.setTravelTimesMap(link.getTravelTimesMap());
+//                newLink.setAmountOfCuts(amountOfParts - 1);
+                newLink.setSpeed(link.getSpeed());
+
                 newLinkMap.put(newLink.getId(),newLink);
             }
         }
@@ -117,7 +118,7 @@ public class LinkMapHandler {
         System.out.println("maxLength = " +maxLength);
         System.out.println("avg length = " + (totalLength/newLinkMap.size()));
         System.out.println();
-        IOHandler.writeLinkMap(newLinkMap, String.valueOf((int)maximumStreetLength));
+        IOHandler.writeFile(newLinkMap, ioHandler.getLinkMapPath());
         System.out.println("There are "+extaLinks+" links added." );
     }
 

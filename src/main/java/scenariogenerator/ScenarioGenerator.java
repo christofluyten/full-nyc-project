@@ -1,6 +1,7 @@
 package scenariogenerator;
 
-import com.github.christofluyten.routingtable.RoutingTable;
+import com.github.christofluyten.routingtable.Routingtable;
+import com.github.christofluyten.routingtable.RoutingtableHandler;
 import com.github.rinde.rinsim.core.model.pdp.DefaultPDPModel;
 import com.github.rinde.rinsim.core.model.pdp.Parcel;
 import com.github.rinde.rinsim.core.model.pdp.TimeWindowPolicy;
@@ -10,7 +11,7 @@ import com.github.rinde.rinsim.core.model.time.RealtimeClockController;
 import com.github.rinde.rinsim.core.model.time.TimeModel;
 import com.github.rinde.rinsim.geom.ListenableGraph;
 import com.github.rinde.rinsim.geom.Point;
-import com.github.rinde.rinsim.geom.RoutingTableSupplier;
+import com.github.rinde.rinsim.geom.RoutingtableSupplier;
 import com.github.rinde.rinsim.geom.io.DotGraphIO;
 import com.github.rinde.rinsim.pdptw.common.*;
 import com.github.rinde.rinsim.scenario.Scenario;
@@ -27,11 +28,13 @@ import data.object.Taxi;
 import data.time.Date;
 import fileMaker.IOHandler;
 import fileMaker.SimulationObjectHandler;
+import map.CsvConverter;
 
 import javax.measure.unit.NonSI;
 import javax.measure.unit.SI;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -45,7 +48,6 @@ public class ScenarioGenerator {
 
 
     private IOHandler ioHandler;
-    private int offset;
 
     public ScenarioGenerator(Builder builder) {
         this.builder = builder;
@@ -61,39 +63,41 @@ public class ScenarioGenerator {
         }
         this.ioHandler = ioHandler;
         setScenarioFileFullName();
-        makeMap();
+        makeMap(ioHandler);
     }
 
     public static void main(String[] args) throws Exception {
 
     }
-
-    public IOHandler getIoHandler() {
-        return ioHandler;
-    }
+    
 
     private void setScenarioFileFullName() {
-        getIoHandler().setScenarioFileFullName(getIoHandler().getScenarioFileName() + getIoHandler().getAttribute() + "_" + getIoHandler().getScenarioStartTime().getShortStringDateForPath() + "_"
-                + getIoHandler().getScenarioEndTime().getShortStringDateForPath());
+        ioHandler.setScenarioFileFullName(ioHandler.getScenarioFileName() + ioHandler.getAttribute() + "_" + ioHandler.getScenarioStartTime().getShortStringDateForPath() + "_"
+                + ioHandler.getScenarioEndTime().getShortStringDateForPath());
     }
 
-    private void makeMap() {
+    private void makeMap(IOHandler ioHandler) {
         try {
-            getIoHandler().makeMap();
+                if(!ioHandler.fileExists(ioHandler.getMapFilePath())) CsvConverter.convertLinkMap(ioHandler);
+                if(!ioHandler.fileExists(ioHandler.getRoutingTablePath())) {
+                    RoutingtableHandler rth = new RoutingtableHandler();
+                    rth.createTable(ioHandler.getMapFilePath(), ioHandler.getRoutingTablePath());
+                }
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
 
     public Scenario generateTaxiScenario(int offset) throws Exception {
-        this.offset =offset;
         Scenario.Builder builder = Scenario.builder();
         addGeneralProperties(builder);
         addTaxis(builder);
             builder.addModel(
                     PDPGraphRoadModel.builderForGraphRm(
                             CachedNycGraphRoadModelImpl.builder(
-                                    ListenableGraph.supplier(DotGraphIO.getMultiAttributeDataGraphSupplier(Paths.get(getIoHandler().getMapFilePath()))),this.builder.routingTablePath)
+                                    ListenableGraph.supplier(DotGraphIO.getMultiAttributeDataGraphSupplier(Paths.get(ioHandler.getMapFilePath()))),ioHandler.getRoutingTablePath())
                                     .withSpeedUnit(NonSI.KILOMETERS_PER_HOUR)
                                     .withDistanceUnit(SI.KILOMETER)
                     )
@@ -107,7 +111,7 @@ public class ScenarioGenerator {
 //            addManhattan(builder);
 //            addNYC(builder);
         Scenario scenario = builder.build();
-        getIoHandler().writeScenario(scenario);
+        ioHandler.writeScenario(scenario);
         return scenario;
 //        }
     }
@@ -132,15 +136,16 @@ public class ScenarioGenerator {
     }
 
     private void addTaxis(Scenario.Builder builder) throws IOException, ClassNotFoundException {
-        if (!(getIoHandler().fileExists(ioHandler.getPositionedTaxisPath()))) {
+        if (!(ioHandler.fileExists(ioHandler.getPositionedTaxisPath()))) {
             SimulationObjectHandler tfm = new SimulationObjectHandler(ioHandler);
             tfm.extractAndPositionTaxis();
         }
-        List<SimulationObject> taxis = getIoHandler().readPositionedObjects(ioHandler.getPositionedTaxisPath());
+        List<SimulationObject> taxis = ioHandler.readPositionedObjects(ioHandler.getPositionedTaxisPath());
         int totalCount = 0;
         int addedCount = 0;
+        Collections.shuffle(taxis);
         for (SimulationObject object : taxis) {
-            if ((totalCount+offset) % this.builder.amountFilter == 0) {
+//            if ((totalCount+offset) % this.builder.nbOfPassengers == 0) {
                 addedCount++;
                 Taxi taxi = (Taxi) object;
                 builder.addEvent(AddVehicleEvent.create(-1, VehicleDTO.builder()
@@ -148,29 +153,30 @@ public class ScenarioGenerator {
                         .startPosition(taxi.getStartPoint())
                         .capacity(4)
                         .build()));
-            }
+//            }
 
 
             totalCount++;
-////            if (addedCount >= 20) {
-//                break;
-//            }
+            if (addedCount >= this.builder.nbOfTaxis) {
+                break;
+            }
         }
         System.out.println(addedCount + " taxi's added of the " + totalCount);
     }
 
 
     private void addPassengers(Scenario.Builder builder) throws IOException, ClassNotFoundException {
-        if (!(getIoHandler().fileExists(ioHandler.getPositionedPassengersPath()))) {
+        if (!(ioHandler.fileExists(ioHandler.getPositionedPassengersPath()))) {
             SimulationObjectHandler pfm = new SimulationObjectHandler(ioHandler);
             pfm.extractAndPositionPassengers();
         }
-        List<SimulationObject> passengers = getIoHandler().readPositionedObjects(ioHandler.getPositionedPassengersPath());
+        List<SimulationObject> passengers = ioHandler.readPositionedObjects(ioHandler.getPositionedPassengersPath());
         int totalCount = 0;
         int addedCount = 0;
-        RoutingTable routingTable = RoutingTableSupplier.get(this.builder.routingTablePath);
+        Routingtable routingTable = RoutingtableSupplier.get(ioHandler.getRoutingTablePath());
+        Collections.shuffle(passengers);
         for (SimulationObject object : passengers) {
-            if ((totalCount+offset) % this.builder.amountFilter == 0) {
+//            if ((totalCount+offset) % this.builder.nbOfPassengers == 0) {
                 addedCount++;
                 Passenger passenger = (Passenger) object;
                 long pickupStartTime = passenger.getStartTime(this.builder.taxiDataStartTime);
@@ -192,29 +198,33 @@ public class ScenarioGenerator {
                 }
                 builder.addEvent(
                         AddParcelEvent.create(parcelBuilder.buildDTO()));
-            }
-            totalCount++;
-//            if (debug && addedCount >= 3) {
-//                break;
 //            }
+            totalCount++;
+            System.out.println(pickupStartTime);
+
+
+            if (addedCount >= this.builder.nbOfPassengers) {
+                break;
+            }
 
         }
         System.out.println(addedCount + " passengers added of the " + totalCount);
     }
 
     private void addPassengersAtInterval(Scenario.Builder builder) throws IOException, ClassNotFoundException {
-        if (!(getIoHandler().fileExists(ioHandler.getPositionedPassengersPath()))) {
+        if (!(ioHandler.fileExists(ioHandler.getPositionedPassengersPath()))) {
             SimulationObjectHandler pfm = new SimulationObjectHandler(ioHandler);
             pfm.extractAndPositionPassengers();
         }
-        List<SimulationObject> passengers = getIoHandler().readPositionedObjects(ioHandler.getPositionedPassengersPath());
+        List<SimulationObject> passengers = ioHandler.readPositionedObjects(ioHandler.getPositionedPassengersPath());
         int nbOfPassengers = passengers.size();
         long interval = this.builder.scenarioDuration/nbOfPassengers;
         int totalCount = 0;
         int addedCount = 0;
-        RoutingTable routingTable = RoutingTableSupplier.get(this.builder.routingTablePath);
+        Routingtable routingTable = RoutingtableSupplier.get(ioHandler.getRoutingTablePath());
+        Collections.shuffle(passengers);
         for (SimulationObject object : passengers) {
-            if ((totalCount+offset) % this.builder.amountFilter == 0){
+//            if ((totalCount+offset) % this.builder.nbOfPassengers == 0){
                 addedCount++;
                 Passenger passenger = (Passenger) object;
                 long pickupStartTime = interval*totalCount;
@@ -236,25 +246,26 @@ public class ScenarioGenerator {
                 }
                 builder.addEvent(
                         AddParcelEvent.create(parcelBuilder.buildDTO()));
-            }
-            totalCount++;
-//            if (debug && addedCount >= 3) {
-//                break;
 //            }
+            totalCount++;
+            System.out.println(pickupStartTime);
+            if (addedCount >= this.builder.nbOfPassengers) {
+                break;
+            }
 
         }
         System.out.println(addedCount + " passengers added of the " + totalCount);
     }
 
     private void addPassengerstest(Scenario.Builder builder) throws IOException, ClassNotFoundException {
-        List<SimulationObject> passengers = getIoHandler().readPositionedObjects(ioHandler.getPositionedPassengersPath());
+        List<SimulationObject> passengers = ioHandler.readPositionedObjects(ioHandler.getPositionedPassengersPath());
         int nbOfPassengers = 20;
         int groupSize = 4;
         long interval = this.builder.scenarioDuration/(nbOfPassengers/groupSize);
         int totalCount = 0;
         int addedCount = 0;
         int groupcount = 0;
-        RoutingTable routingTable = RoutingTableSupplier.get(this.builder.routingTablePath);
+        Routingtable routingTable = RoutingtableSupplier.get(ioHandler.getRoutingTablePath());
         for (SimulationObject object : passengers) {
             while(groupcount < groupSize){
                 addedCount++;
@@ -292,13 +303,13 @@ public class ScenarioGenerator {
 
 
 
-    private long getDeliveryStartTime(Passenger passenger, RoutingTable routingTable) {
+    private long getDeliveryStartTime(Passenger passenger, Routingtable routingTable) {
         long startTime = passenger.getStartTime(this.builder.taxiDataStartTime);
         long travelTime = (long) routingTable.getRoute(passenger.getStartPoint(), passenger.getEndPoint()).getTravelTime();
         return startTime + travelTime + this.builder.pickupDuration;
     }
 
-    private long getDeliveryStartTimeAtInterval(Passenger passenger, RoutingTable routingTable, long startTime) {
+    private long getDeliveryStartTimeAtInterval(Passenger passenger, Routingtable routingTable, long startTime) {
         long travelTime = (long) routingTable.getRoute(passenger.getStartPoint(), passenger.getEndPoint()).getTravelTime();
         return startTime + travelTime + this.builder.pickupDuration;
     }
@@ -345,8 +356,8 @@ public class ScenarioGenerator {
         private boolean traffic;
         private long tickSize;
         private boolean ridesharing;
-        private String routingTablePath;
-        private int amountFilter;
+        private int nbOfPassengers;
+        private int nbOfTaxis;
         private long timewindow;
 
         Builder() {
@@ -363,7 +374,8 @@ public class ScenarioGenerator {
             traffic = true;
             tickSize = 250L;
             ridesharing = false;
-            amountFilter = 1;
+            nbOfPassengers = 10;
+            nbOfTaxis = 5;
             timewindow = 5*60*1000L;
 
         }
@@ -433,14 +445,15 @@ public class ScenarioGenerator {
             return this;
         }
 
+        
 
-        public Builder setRoutingTablePath(String routingTablePath) {
-            this.routingTablePath = routingTablePath;
+        public Builder setNbOfPassengers(int nbOfPassengers) {
+            this.nbOfPassengers = nbOfPassengers;
             return this;
         }
 
-        public Builder setAmountFilter(int amountFilter) {
-            this.amountFilter = amountFilter;
+        public Builder setNbOfTaxis(int nbOfTaxis) {
+            this.nbOfTaxis = nbOfTaxis;
             return this;
         }
 

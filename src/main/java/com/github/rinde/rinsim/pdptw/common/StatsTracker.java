@@ -15,7 +15,6 @@
  */
 package com.github.rinde.rinsim.pdptw.common;
 
-import com.github.christofluyten.routingtable.RoutingTable;
 import com.github.rinde.rinsim.core.model.DependencyProvider;
 import com.github.rinde.rinsim.core.model.Model.AbstractModelVoid;
 import com.github.rinde.rinsim.core.model.ModelBuilder.AbstractModelBuilder;
@@ -35,7 +34,6 @@ import com.github.rinde.rinsim.event.EventAPI;
 import com.github.rinde.rinsim.event.EventDispatcher;
 import com.github.rinde.rinsim.event.Listener;
 import com.github.rinde.rinsim.geom.Point;
-import com.github.rinde.rinsim.geom.RoutingTableSupplier;
 import com.github.rinde.rinsim.scenario.ScenarioController;
 import com.github.rinde.rinsim.scenario.ScenarioController.ScenarioEvent;
 import com.github.rinde.rinsim.scenario.TimeOutEvent;
@@ -73,7 +71,7 @@ public final class StatsTracker extends AbstractModelVoid implements
   Map<Parcel,Long> parcelPickupTime = new HashMap<>();
   Map<Parcel,Long> parcelTardiness = new HashMap<>();
 
-//  RoutingTable routingTable = RoutingTableSupplier.get("src/main/resources/maps/RoutingTable");
+//  Routingtable routingTable = RoutingtableSupplier.get("src/main/resources/maps/Routingtable");
 
   enum StatisticsEventType {
     PICKUP_TARDINESS, DELIVERY_TARDINESS, ALL_VEHICLES_AT_DEPOT;

@@ -4,7 +4,6 @@ import javax.measure.quantity.Length;
 import javax.measure.quantity.Velocity;
 import javax.measure.unit.Unit;
 
-import com.github.christofluyten.routingtable.RoutingTable;
 import com.github.rinde.rinsim.core.model.DependencyProvider;
 import com.github.rinde.rinsim.core.model.road.RoadModelBuilders.AbstractGraphRMB;
 import com.github.rinde.rinsim.geom.Graph;

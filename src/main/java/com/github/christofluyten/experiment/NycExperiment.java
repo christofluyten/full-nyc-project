@@ -64,8 +64,9 @@ public class NycExperiment {
 	private static String attribute = "noRidesharing";
 	private static boolean debug = true;
 	private static boolean gui = true;
-	private final static int amountFilter = 5;
-	private final static double commDist = 2.0;
+	private final static int nbOfPassengers = 20;
+	private final static int nbOfTaxis = 10;
+	private final static double commDist = 0.05;
 	private final static double commExt = 0.1;
 	private static final int minNbOfBidders = 5;
 	private static int repetitions = 3;
@@ -75,8 +76,8 @@ public class NycExperiment {
 
 	private static final String taxiDataDirectory = "/media/christof/Elements/Taxi_data/";
 	private static final String travelTimesDirectory = "/media/christof/Elements/Traffic_estimates/"; //path to director with the travel_times
-	private static final Date taxiDataStartTime = new Date("2013-11-18 16:00:00");                   //format: "yyyy-mm-dd HH:mm:ss"
-	private static final Date taxiDataEndTime = new Date("2013-11-18 17:00:00");
+	private static final Date taxiDataStartTime = new Date("2013-11-18 14:00:00");                   //format: "yyyy-mm-dd HH:mm:ss"
+	private static final Date taxiDataEndTime = new Date("2013-11-18 18:00:00");
 
 	private static final double maxVehicleSpeedKmh = 120d;
 
@@ -87,7 +88,7 @@ public class NycExperiment {
 
 	private static final int cutLength = 500;                                                  //maximum length in meters of a edge in the graph (or "link" in the "map")
 
-	private static final long scenarioDuration = (1 * 60 * 60 * 1000L) + 1L;
+	private static final long scenarioDuration = ((Long.valueOf(taxiDataEndTime.getHour())-Long.valueOf(taxiDataStartTime.getHour())) * 60 * 60 * 1000L) + 1L;
 //	private static final long scenarioDuration = (60 * 1000L) + 1L;
 
 	private static final long scenarioDurationDebug = (1000 * 1000L) + 1L;
@@ -99,8 +100,6 @@ public class NycExperiment {
 
 	private static final long tickSize = 250L;
 
-	private static final String routingTablePath= "src/main/resources/maps/RoutingTable";
-
 
 	/**
 	 * Usage: args = [ generate/experiment datasetID #buckets bucketID]
@@ -108,6 +107,7 @@ public class NycExperiment {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws Exception {
+		System.out.println("lengt of arguments = " + args.length);
 		if (args.length > 0 && args[0].equals("false")) {
 			debug = false;
 		}
@@ -132,7 +132,7 @@ public class NycExperiment {
 		System.out.println("++++++  attribute "+attribute+" ++++++");
 		System.out.println("++++++  minNbOfBidders "+minNbOfBidders+" ++++++");
 		System.out.println("++++++  maxAuctionDurationSoft "+maxAuctionDurationSoft+" ++++++");
-		System.out.println("++++++  amountFilter "+amountFilter+" ++++++");
+		System.out.println("++++++  nbOfPassengers "+nbOfPassengers+" ++++++");
 		System.out.println("++++++  timewindow "+timewindow+" ++++++");
 		System.out.println("++++++  debug "+debug+" ++++++");
 
@@ -153,8 +153,8 @@ public class NycExperiment {
 							.setTickSize(tickSize)
 							.setTraffic(traffic)
 							.setRidesharing(ridesharing)
-							.setRoutingTablePath(routingTablePath)
-							.setAmountFilter(amountFilter)
+							.setNbOfPassengers(nbOfPassengers)
+							.setNbOfTaxis(nbOfTaxis)
 							.setTimewindow(timewindow)
 							.build();
 
@@ -162,9 +162,12 @@ public class NycExperiment {
 		Scenario scenario = sg.generateTaxiScenario(0);
 
 		List<Scenario> scenarios = new ArrayList<>();
-		scenarios.add(sg.generateTaxiScenario(0));
-		scenarios.add(sg.generateTaxiScenario(1));
-		scenarios.add(sg.generateTaxiScenario(2));
+		scenarios.add(scenario);
+//		if(!debug){
+			scenarios.add(sg.generateTaxiScenario(1));
+			scenarios.add(sg.generateTaxiScenario(2));
+//		}
+
 
 		System.out.println("measureDynamism " + Metrics.measureDynamism(scenario));
 		System.out.println("measureUrgency " + Metrics.measureUrgency(scenario));
@@ -258,7 +261,7 @@ public class NycExperiment {
 								.withName("Central_" + attribute)
 								.withSolverHeuristic(heuristic)
 								.withUnimprovedMsLimit(centralUnimprovedMs),
-						"Central_" + attribute+"_aFilter="+amountFilter+"_"+commDist+"_"+commExt+"_TW="+(timewindow/(60*1000L))));
+						"Central_" + attribute+"_aFilter="+nbOfPassengers+"_"+commDist+"_"+commExt+"_TW="+(timewindow/(60*1000L))));
 				System.out.println("Central");
 
 			}
@@ -286,7 +289,7 @@ public class NycExperiment {
 			long reauctCooldownPeriodMs, boolean computationsLogging) {
 
 		MASConfiguration.Builder b = MASConfiguration.pdptwBuilder()
-				.setName("MAS_" + attribute+"_aFilter="+amountFilter+"_"+commDist+"_"+commExt+"_TW="+(timewindow/(60*1000L)))
+				.setName("MAS_" + attribute+"_aFilter="+nbOfPassengers+"_"+commDist+"_"+commExt+"_TW="+(timewindow/(60*1000L)))
 				.addEventHandler(TimeOutEvent.class, TimeOutEvent.ignoreHandler())
 				.addEventHandler(AddDepotEvent.class, AddDepotEvent.defaultHandler())
 				.addEventHandler(AddParcelEvent.class, AddParcelEvent.defaultHandler())

@@ -1,15 +1,15 @@
 package com.github.rinde.rinsim.geom;
 
 import com.github.christofluyten.IO.IO;
-import com.github.christofluyten.routingtable.RoutingTable;
+import com.github.christofluyten.routingtable.Routingtable;
 
 import java.util.function.Supplier;
 
 /**
  * Created by christof on 14.04.17.
  */
-public class RoutingTableSupplier implements Supplier<RoutingTable>{
-    private static RoutingTable routingTable = null;
+public class RoutingtableSupplier implements Supplier<Routingtable>{
+    private static Routingtable routingTable = null;
 
     private String path;
 
@@ -17,19 +17,19 @@ public class RoutingTableSupplier implements Supplier<RoutingTable>{
         this.path = path;
     }
 
-    public RoutingTable get(){
-        return RoutingTableSupplier.get(path);
+    public Routingtable get(){
+        return RoutingtableSupplier.get(path);
     }
 
-    public static RoutingTable get(String path) {
-        synchronized (RoutingTableSupplier.class) {
+    public static Routingtable get(String path) {
+        synchronized (RoutingtableSupplier.class) {
             if (routingTable == null) {
                 try {
-                    routingTable = (RoutingTable) IO.readFile(path);
+                    routingTable = (Routingtable) IO.readFile(path);
                 } catch (Exception e) {
                 	e.printStackTrace();
                     System.out.println("failed to load the routingtable " + path);
-                    routingTable = new RoutingTable();
+                    routingTable = new Routingtable();
                 }
             }
         }

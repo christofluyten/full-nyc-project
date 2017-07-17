@@ -12,16 +12,16 @@ import java.util.List;
 /**
  * Created by Christof on 1/04/2017.
  */
-public class RoutingTable implements Serializable {
+public class Routingtable implements Serializable {
 
     private final ImmutableTable<Point, Point, Route> immutableTable;
 
-    public RoutingTable() {
+    public Routingtable() {
         ImmutableTable.Builder<Point, Point, Route> builder = ImmutableTable.builder();
         immutableTable = builder.build();
     }
 
-    public RoutingTable(Table<Point, Point, Route> table) {
+    public Routingtable(Table<Point, Point, Route> table) {
         ImmutableTable.Builder<Point, Point, Route> builder = ImmutableTable.builder();
         immutableTable = builder.putAll(table).build();
     }

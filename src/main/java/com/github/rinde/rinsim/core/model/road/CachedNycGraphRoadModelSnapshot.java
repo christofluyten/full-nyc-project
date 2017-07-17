@@ -25,7 +25,7 @@ import javax.measure.quantity.Length;
 import javax.measure.quantity.Velocity;
 import javax.measure.unit.Unit;
 
-import com.github.christofluyten.routingtable.RoutingTable;
+import com.github.christofluyten.routingtable.Routingtable;
 import com.github.rinde.rinsim.geom.ConnectionData;
 import com.github.rinde.rinsim.geom.GeomHeuristic;
 import com.github.rinde.rinsim.geom.ImmutableGraph;
@@ -47,7 +47,7 @@ abstract class CachedNycGraphRoadModelSnapshot
 
   public abstract ImmutableGraph<? extends ConnectionData> getGraph();
   
-  public abstract RoutingTable getRoutingTable();
+  public abstract Routingtable getRoutingTable();
 
   public abstract Unit<Length> getModelDistanceUnit();
 
@@ -74,7 +74,7 @@ abstract class CachedNycGraphRoadModelSnapshot
   }
 
   static CachedNycGraphRoadModelSnapshot create(
-      ImmutableGraph<ConnectionData> graph, RoutingTable routingTable, Unit<Length> distanceUnit) {
+          ImmutableGraph<ConnectionData> graph, Routingtable routingTable, Unit<Length> distanceUnit) {
     return new AutoValue_CachedNycGraphRoadModelSnapshot(graph, routingTable, distanceUnit);
   }
 

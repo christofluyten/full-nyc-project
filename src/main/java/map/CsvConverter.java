@@ -36,7 +36,7 @@ public class CsvConverter {
             MultiAttributeData.Builder data = MultiAttributeData.builder();
             data.setLength(link.getLengthInKm());
             if(ioHandler.getWithTraffic()){
-                data.setMaxSpeed(link.getSpeed(ioHandler.getScenarioStartTime()));
+                data.setMaxSpeed(link.getSpeed());
             }
             graph.addConnection(new Point(link.getStartX(),link.getStartY()),
                     new Point(link.getEndX(),link.getEndY()),

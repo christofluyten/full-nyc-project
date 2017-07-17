@@ -9,10 +9,7 @@ import com.google.common.collect.Table;
 import javax.measure.Measure;
 import javax.measure.unit.NonSI;
 import javax.measure.unit.SI;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -20,23 +17,21 @@ import java.util.Set;
 /**
  * Created by Christof on 1/04/2017.
  */
-public class RoutingTableHandler {
+public class RoutingtableHandler {
 
     private Table<Point, Point, Route> table;
 
 
 
-    private int nbOfShortestPathCalc;
-
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         String mapPath = "src/main/resources/maps/map500.dot";
-        String tablePath = "src/main/resources/maps/RoutingTable";
-            RoutingTableHandler routingTableHandler = new RoutingTableHandler();
+        String tablePath = "src/main/resources/maps/Routingtable";
+            RoutingtableHandler routingTableHandler = new RoutingtableHandler();
             routingTableHandler.createTable(mapPath,tablePath);
 
     }
 
-    public void createTable(String pathToMap, String pathToRoutingTable) throws IOException, ClassNotFoundException {
+    public void createTable(String pathToMap, String pathToRoutingtable) throws IOException, ClassNotFoundException {
         table = HashBasedTable.create();
 
         Graph<MultiAttributeData> graph = DotGraphIO.getMultiAttributeGraphIO().read(pathToMap);
@@ -75,21 +70,17 @@ public class RoutingTableHandler {
             if(count % 100 == 0){
                 System.out.println("outerloop " + count);
             }
-            nbOfShortestPathCalc = 0;
 
             table.put(fromPoint, fromPoint, new Route(fromPoint, 0d));
             for (Point toPoint : points) {
                 if (!table.contains(fromPoint, toPoint)) {
                     List<Point> route = Graphs.shortestPath(graph, fromPoint, toPoint, heuristic);
                     addAllSubpathsToTable(graph, heuristic, route);
-                } else {
-                    nbOfShortestPathCalc++;
                 }
             }
-//            System.out.println("nbOfShortestPathCalc " + (nfOfNodes - nbOfShortestPathCalc) + " table size " + table.size());
 
         }
-        IO.writeFile(new RoutingTable(table), pathToRoutingTable);
+        IO.writeFile(new Routingtable(table), pathToRoutingtable);
     }
 
     private void addAllSubpathsToTable(Graph<MultiAttributeData> graph, GeomHeuristic heuristic, List<Point> route) {

@@ -230,7 +230,7 @@ public class TravelTimesHandler {
                     totalTravelTime = minAndAverageTravelTimes.get(id).get(1);
                 } catch (NullPointerException e2){
                     Double length = link.getLengthInM();
-                    totalTravelTime = length/(30/3.6);
+                    totalTravelTime = length/(20/3.6);
                 }
                 nbOfTravelTimes++;
             }
